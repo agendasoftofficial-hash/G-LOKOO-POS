@@ -1,4 +1,4 @@
-﻿import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import { createRoot } from "react-dom/client";
 import {
   LayoutDashboard, ShoppingCart, Package, Smartphone, Users, Wrench,
@@ -83,7 +83,7 @@ async function checkForLiveUpdate() {
 
 checkForLiveUpdate();
 
-const money = n => `â‚µ${Number(n||0).toLocaleString("en-GH",{minimumFractionDigits:2})}`;
+const money = n => `₵${Number(n||0).toLocaleString("en-GH",{minimumFractionDigits:2})}`;
 
 function BarcodeScanner({onDetected,onClose,title="Scan Barcode"}){
   const videoRef=useRef(null);
@@ -209,7 +209,7 @@ function Login({onLogin}){
         {error&&<div className="error">{error}</div>}
         <button className="login-btn" disabled={busy}>{busy?<><LoaderCircle className="spin" size={17}/>Signing in...</>:"Sign in"}</button>
       </form>
-      <small>Secure access Â· G-LOKOO POS</small>
+      <small>Secure access · G-LOKOO POS</small>
     </div>
   </div>
 }
@@ -442,11 +442,11 @@ async function loadPhones(){
       return;
     }
     if(!Number.isFinite(paid) || paid < 0 || paid > total){
-      alert(`Amount paid must be between â‚µ0.00 and ${money(total)}.`);
+      alert(`Amount paid must be between ₵0.00 and ${money(total)}.`);
       return;
     }
     if(paymentType === "Part Payment" && paid <= 0){
-      alert("Enter an amount greater than â‚µ0.00 for a part payment.");
+      alert("Enter an amount greater than ₵0.00 for a part payment.");
       return;
     }
     if(paymentType === "Part Payment" && paid >= total){
@@ -562,12 +562,12 @@ ${e.message||e}`);
     <aside className={`sidebar ${mobileOpen?"open":""}`}>
       <div className="brand"><img src="/g-lokoo-logo.png" alt="G-LOKOO"/><div><strong>G-LOKOO</strong><span>PHONES & ACCESSORIES</span></div><button className="close" onClick={()=>setMobileOpen(false)}><X size={20}/></button></div>
       <div className="nav">{nav.filter(([,Icon,allowed])=>allowed).map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>navigate(name)}><Icon size={19}/><span>{name}</span></button>)}</div>
-      <div className="sidebar-footer"><button className="logout" onClick={logout}><LogOut size={15}/> Sign out</button>Â© AgendaSoft 2026 Â· G-LOKOO POS</div>
+      <div className="sidebar-footer"><button className="logout" onClick={logout}><LogOut size={15}/> Sign out</button>Â© AgendaSoft 2026 · G-LOKOO POS</div>
     </aside>
 
     <main className="main">
       <header className="topbar">
-        <div className={`connection-status ${online?"online":"offline"}`} title={online?"Online":"Offline mode"}><span/> {online?"Online":"Offline"}{pendingSync>0&&<b> Â· {pendingSync} pending</b>}</div>
+        <div className={`connection-status ${online?"online":"offline"}`} title={online?"Online":"Offline mode"}><span/> {online?"Online":"Offline"}{pendingSync>0&&<b> · {pendingSync} pending</b>}</div>
         <button className="menu" onClick={()=>setMobileOpen(true)}><Menu/></button>
         <div><h1>{page}</h1><p>G-LOKOO PHONES AND ACCESSORIES</p></div>
         <div className="top-actions"><button><Bell size={19}/></button><div className="user"><ShieldCheck size={14}/>{profile?.full_name||session.user.email}<small>{role}</small></div></div>
@@ -619,7 +619,7 @@ ${e.message||e}`);
       {page==="Staff"&&<Staff currentProfile={profile} reload={loadProfile}/>}
       {page==="Settings"&&<SettingsPage settings={shopSettings} reload={loadShopSettings}/>}
       {!["Dashboard","New Sale","Sales History","Products & Inventory","Phones & IMEI","Purchases","Suppliers","Customers","Repairs","Returns & Refunds","Inventory Control","Reports"].includes(page)&&<EmptyPage title={page}/>}
-    <footer className="app-footer">Â© AgendaSoft 2026 Â· G-LOKOO POS</footer>
+    <footer className="app-footer">Â© AgendaSoft 2026 · G-LOKOO POS</footer>
     </main>
   </div>
 }
@@ -742,7 +742,7 @@ function Dashboard({products,phones,role,onNavigate}){
 
       const paymentMap={};
       salesRows.forEach(x=>{const k=x.payment_method||"Other"; paymentMap[k]=(paymentMap[k]||0)+Number(x.amount_paid||0);});
-      repairRows.forEach(x=>{ if(Number(x.amount_paid||0)>0){ const k="Repairs Â· Cash/Recorded"; paymentMap[k]=(paymentMap[k]||0)+Number(x.amount_paid||0); }});
+      repairRows.forEach(x=>{ if(Number(x.amount_paid||0)>0){ const k="Repairs · Cash/Recorded"; paymentMap[k]=(paymentMap[k]||0)+Number(x.amount_paid||0); }});
       const payments=Object.entries(paymentMap).sort((a,b)=>b[1]-a[1]).map(([name,value])=>({name,value}));
 
       const bestMap={};
@@ -900,11 +900,11 @@ function Dashboard({products,phones,role,onNavigate}){
     <div className="dashboard-grid-main">
       <div className="panel dashboard-panel">
         <div className="panel-title"><h3>Recent Sales</h3><span>Latest transactions</span></div>
-        {stats.recentSales.length?stats.recentSales.map(x=><div className="metric-row" key={x.id}><div><b>{x.receipt_no||`Sale #${x.id}`}</b><small>{formatDate(x.created_at)} Â· {x.payment_method||"Other"}</small></div><strong>{money(x.total)}</strong></div>):<div className="empty">No recent sales.</div>}
+        {stats.recentSales.length?stats.recentSales.map(x=><div className="metric-row" key={x.id}><div><b>{x.receipt_no||`Sale #${x.id}`}</b><small>{formatDate(x.created_at)} · {x.payment_method||"Other"}</small></div><strong>{money(x.total)}</strong></div>):<div className="empty">No recent sales.</div>}
       </div>
       <div className="panel dashboard-panel">
         <div className="panel-title"><h3>Repairs Needing Attention</h3><span>Open jobs</span></div>
-        {stats.attentionRepairs.length?stats.attentionRepairs.map(x=><div className="metric-row" key={x.id}><div><b>{x.job_no||`Repair #${x.id}`}</b><small>{x.customer_id?`Customer #${x.customer_id}`:"Customer"} Â· {x.status}</small></div><strong>{money(Math.max(0,Number(x.repair_cost||0)-Number(x.amount_paid||0)))}</strong></div>):<div className="empty">No open repairs need attention.</div>}
+        {stats.attentionRepairs.length?stats.attentionRepairs.map(x=><div className="metric-row" key={x.id}><div><b>{x.job_no||`Repair #${x.id}`}</b><small>{x.customer_id?`Customer #${x.customer_id}`:"Customer"} · {x.status}</small></div><strong>{money(Math.max(0,Number(x.repair_cost||0)-Number(x.amount_paid||0)))}</strong></div>):<div className="empty">No open repairs need attention.</div>}
       </div>
     </div>
 
@@ -922,7 +922,7 @@ function Dashboard({products,phones,role,onNavigate}){
     <div className="dashboard-grid-main">
       <div className="panel dashboard-panel">
         <div className="panel-title"><h3>Recent Purchases</h3><span>Latest stock received</span></div>
-        {stats.recentPurchases.length?stats.recentPurchases.map(x=><div className="metric-row" key={x.id}><div><b>{x.purchase_no||`Purchase #${x.id}`}</b><small>{formatDate(x.created_at)} Â· {x.supplier||"No supplier"}</small></div><strong>{money(x.total)}</strong></div>):<div className="empty">No recent purchases.</div>}
+        {stats.recentPurchases.length?stats.recentPurchases.map(x=><div className="metric-row" key={x.id}><div><b>{x.purchase_no||`Purchase #${x.id}`}</b><small>{formatDate(x.created_at)} · {x.supplier||"No supplier"}</small></div><strong>{money(x.total)}</strong></div>):<div className="empty">No recent purchases.</div>}
       </div>
       <div className="panel dashboard-panel">
         <div className="panel-title"><h3>Financial Snapshot</h3><span>Selected period</span></div>
@@ -956,7 +956,7 @@ function Dashboard({products,phones,role,onNavigate}){
     <div className="dashboard-grid-main">
       <div className="panel dashboard-panel">
         <div className="panel-title"><h3>Best Sellers</h3><span>Selected period</span></div>
-        {stats.bestSellers.length?stats.bestSellers.map(x=><div className="metric-row" key={x.name}><div><b>{x.name}</b><small>{x.qty} unit{x.qty===1?"":"s"} Â· Profit {money(x.profit)}</small></div><strong>{money(x.revenue)}</strong></div>):<div className="empty">No sales in this period.</div>}
+        {stats.bestSellers.length?stats.bestSellers.map(x=><div className="metric-row" key={x.name}><div><b>{x.name}</b><small>{x.qty} unit{x.qty===1?"":"s"} · Profit {money(x.profit)}</small></div><strong>{money(x.revenue)}</strong></div>):<div className="empty">No sales in this period.</div>}
       </div>
       <div className="panel dashboard-panel">
         <div className="panel-title"><h3>Low Stock</h3><span>10 units or less</span></div>
@@ -1085,7 +1085,7 @@ function POS({products,phones,query,setQuery,phoneImei,setPhoneImei,lookupImei,c
         </label>}
         {paymentType !== "Full Payment" && <div className="balance-box"><span>Paid now</span><b>{money(paymentType === "Credit" ? 0 : Number(amountPaid||0))}</b><span>Balance due</span><strong>{money(Math.max(0,total-(paymentType === "Credit" ? 0 : Number(amountPaid||0))))}</strong></div>}
         <button className="checkout-btn" disabled={!cart.length} onClick={checkout}>
-          <CheckCircle2 size={17}/> COMPLETE SALE Â· {money(total)}
+          <CheckCircle2 size={17}/> COMPLETE SALE · {money(total)}
         </button>
       </div>
     </div>
@@ -1108,7 +1108,7 @@ function printReceiptWindow(sale,settings){
   const sidePad=thermalMode?(receiptWidth==="58mm"?"3mm":"4mm"):"12mm";
   const items=(sale.items||[]).map(i=>`<div class="item"><div class="item-left"><b>${esc(i.name)}</b>${i.kind==="phone"?`<small>IMEI: ${esc(i.imei)}</small>`:`<small>${esc(i.qty)} Ã— ${money(i.price)}</small>`}</div><strong>${money(i.price*i.qty)}</strong></div>`).join("");
   const payment=sale.paymentType==="Credit"?"Credit":(sale.payment||"");
-  const extra=sale.paymentType==="Part Payment"?`<div class="row"><span>Paid now</span><b>${money(sale.amountPaid)}</b></div><div class="row"><span>Balance due</span><b>${money(sale.balanceDue)}</b></div>${sale.dueDate?`<div class="row"><span>Due date</span><b>${esc(new Date(`${sale.dueDate}T00:00:00`).toLocaleDateString("en-GH"))}</b></div>`:``}`:sale.paymentType==="Credit"?`<div class="row"><span>Paid now</span><b>â‚µ0.00</b></div><div class="row"><span>Balance due</span><b>${money(sale.balanceDue)}</b></div>${sale.dueDate?`<div class="row"><span>Due date</span><b>${esc(new Date(`${sale.dueDate}T00:00:00`).toLocaleDateString("en-GH"))}</b></div>`:``}`:"";
+  const extra=sale.paymentType==="Part Payment"?`<div class="row"><span>Paid now</span><b>${money(sale.amountPaid)}</b></div><div class="row"><span>Balance due</span><b>${money(sale.balanceDue)}</b></div>${sale.dueDate?`<div class="row"><span>Due date</span><b>${esc(new Date(`${sale.dueDate}T00:00:00`).toLocaleDateString("en-GH"))}</b></div>`:``}`:sale.paymentType==="Credit"?`<div class="row"><span>Paid now</span><b>₵0.00</b></div><div class="row"><span>Balance due</span><b>${money(sale.balanceDue)}</b></div>${sale.dueDate?`<div class="row"><span>Due date</span><b>${esc(new Date(`${sale.dueDate}T00:00:00`).toLocaleDateString("en-GH"))}</b></div>`:``}`:"";
   const ref=sale.paymentReference?`<div class="row"><span>Reference</span><b>${esc(sale.paymentReference)}</b></div>`:"";
   const shopName=esc(settings?.shop_name||"G-LOKOO PHONES AND ACCESSORIES");
   const phone1=esc(settings?.phone_primary||"0247917685");
@@ -1147,7 +1147,7 @@ function printReceiptWindow(sale,settings){
       html,body{width:${printWidth}!important;max-width:${printWidth}!important;margin:0!important;padding:0!important;overflow-x:hidden!important}
       .receipt{width:${printWidth}!important;max-width:${printWidth}!important;margin:0 auto!important;padding:${sidePad} ${sidePad} 12mm!important;page-break-after:avoid;page-break-before:avoid;overflow:hidden!important}
     }
-  </style></head><body><main class="receipt"><div class="brand"><img src="${location.origin}/g-lokoo-logo.png"><h1>G-LOKOO</h1><p>PHONES AND ACCESSORIES</p><p>${phone1} Â· ${phone2}</p></div><div class="rule"></div><div class="row"><span>Receipt</span><b>${esc(sale.receiptNo)}</b></div><div class="row"><span>Date</span><b>${esc(dateText)}</b></div><div class="row"><span>Customer</span><b>${esc(sale.customer?.name||"Walk-in customer")}</b></div>${sale.customer?.phone?`<div class="row"><span>Phone</span><b>${esc(sale.customer.phone)}</b></div>`:""}<div class="rule"></div>${items}<div class="rule"></div><div class="total"><span>TOTAL</span><strong>${money(sale.total)}</strong></div><div class="row"><span>Payment</span><b>${esc(payment)}</b></div>${extra}${ref}<div class="thanks"><b>${footer}</b><span>${note}</span></div></main><script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close()},300)},350)};<\/script></body></html>`);
+  </style></head><body><main class="receipt"><div class="brand"><img src="${location.origin}/g-lokoo-logo.png"><h1>G-LOKOO</h1><p>PHONES AND ACCESSORIES</p><p>${phone1} · ${phone2}</p></div><div class="rule"></div><div class="row"><span>Receipt</span><b>${esc(sale.receiptNo)}</b></div><div class="row"><span>Date</span><b>${esc(dateText)}</b></div><div class="row"><span>Customer</span><b>${esc(sale.customer?.name||"Walk-in customer")}</b></div>${sale.customer?.phone?`<div class="row"><span>Phone</span><b>${esc(sale.customer.phone)}</b></div>`:""}<div class="rule"></div>${items}<div class="rule"></div><div class="total"><span>TOTAL</span><strong>${money(sale.total)}</strong></div><div class="row"><span>Payment</span><b>${esc(payment)}</b></div>${extra}${ref}<div class="thanks"><b>${footer}</b><span>${note}</span></div></main><script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close()},300)},350)};<\/script></body></html>`);
   w.document.close();
 }
 
@@ -1165,7 +1165,7 @@ function Receipt({sale,settings,close}){
           <img src="/g-lokoo-logo.png" alt="G-LOKOO"/>
           <h1>G-LOKOO</h1>
           <p>PHONES AND ACCESSORIES</p>
-          <p>0247917685 Â· 050006067</p>
+          <p>0247917685 · 050006067</p>
         </div>
         <div className="receipt-rule"/>
         <div className="receipt-info"><span>Receipt</span><b>{sale.receiptNo}</b></div>
@@ -1188,7 +1188,7 @@ function Receipt({sale,settings,close}){
           {sale.dueDate&&<div className="receipt-info"><span>Due date</span><b>{new Date(`${sale.dueDate}T00:00:00`).toLocaleDateString("en-GH")}</b></div>}
         </>}
         {sale.paymentType === "Credit" && <>
-          <div className="receipt-info"><span>Paid now</span><b>â‚µ0.00</b></div>
+          <div className="receipt-info"><span>Paid now</span><b>₵0.00</b></div>
           <div className="receipt-info"><span>Balance due</span><b>{money(sale.balanceDue)}</b></div>
           {sale.dueDate&&<div className="receipt-info"><span>Due date</span><b>{new Date(`${sale.dueDate}T00:00:00`).toLocaleDateString("en-GH")}</b></div>}
         </>}
@@ -1304,7 +1304,7 @@ function SalesHistory({customers,settings}){
       <div className="sale-detail">
         <div className="sale-detail-top"><div><b>{customerMap.get(view.customer_id)?.name||"Walk-in customer"}</b><small>{new Date(view.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}</small></div><strong>{money(view.total)}</strong></div>
         {(view.items||[]).map(i=><div className="history-item" key={i.id}><span><b>{i.product_name}</b>{i.imei?<small>IMEI: {i.imei}</small>:<small>{i.quantity} Ã— {money(i.unit_price)}</small>}</span><strong>{money(i.line_total)}</strong></div>)}
-        <div className="history-payment">Payment: {view.payment_method||"Cash"} Â· {view.payment_status||"Paid"}{Number(view.balance_due||0)>0&&` Â· Balance ${money(view.balance_due)}`}</div>
+        <div className="history-payment">Payment: {view.payment_method||"Cash"} · {view.payment_status||"Paid"}{Number(view.balance_due||0)>0&&` · Balance ${money(view.balance_due)}`}</div>
       </div>
       <button className="primary full" onClick={()=>setReceipt(receiptFor(view))}><ReceiptText size={16}/> Open Printable Receipt</button>
       <button className="secondary full" onClick={()=>{setView(null);setTimeout(()=>{},0);}}>Close</button>
@@ -1363,8 +1363,8 @@ function Returns({customers=[]}){
   return <section className="content">
     <div className="section-head"><div><h2>Returns & Refunds</h2><p>Process partial or full returns for completed sales and restore stock.</p></div><button className="secondary" onClick={loadHistory}><History size={16}/> Refresh</button></div>
     <div className="panel return-search"><div className="panel-title"><h3>Find a Sale</h3><span>Owner/Admin only</span></div><div className="searchbar"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&findSale()} placeholder="Receipt number or sale ID..."/><button className="primary" onClick={findSale}>Find Sale</button></div></div>
-    {sale&&<div className="panel return-sale"><div className="sale-detail-top"><div><b>{sale.receipt_no}</b><small>{new Date(sale.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})} Â· {customerMap.get(sale.customer_id)?.name||"Walk-in customer"}</small></div><strong>{money(sale.total)}</strong></div>
-      <div className="return-items">{items.map(i=>{const qty=Number(selected[i.id]||0);return <div className="return-item" key={i.id}><div><b>{i.product_name}</b>{i.imei?<small>IMEI: {i.imei}</small>:<small>{i.quantity} sold Â· {i.availableQty} returnable</small>}</div><div><strong>{money(i.unit_price)}</strong><input type="number" min="0" max={i.availableQty} value={qty} onChange={e=>{const v=Math.min(i.availableQty,Math.max(0,Number(e.target.value||0)));setSelected({...selected,[i.id]:v})}} disabled={!i.availableQty}/></div></div>})}</div>
+    {sale&&<div className="panel return-sale"><div className="sale-detail-top"><div><b>{sale.receipt_no}</b><small>{new Date(sale.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})} · {customerMap.get(sale.customer_id)?.name||"Walk-in customer"}</small></div><strong>{money(sale.total)}</strong></div>
+      <div className="return-items">{items.map(i=>{const qty=Number(selected[i.id]||0);return <div className="return-item" key={i.id}><div><b>{i.product_name}</b>{i.imei?<small>IMEI: {i.imei}</small>:<small>{i.quantity} sold · {i.availableQty} returnable</small>}</div><div><strong>{money(i.unit_price)}</strong><input type="number" min="0" max={i.availableQty} value={qty} onChange={e=>{const v=Math.min(i.availableQty,Math.max(0,Number(e.target.value||0)));setSelected({...selected,[i.id]:v})}} disabled={!i.availableQty}/></div></div>})}</div>
       <div className="form-grid-2"><label>Refund method<select value={refundMethod} onChange={e=>setRefundMethod(e.target.value)}>{["Cash","MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].map(x=><option key={x}>{x}</option>)}</select></label><label>Refund reference<input value={refundReference} onChange={e=>setRefundReference(e.target.value)} placeholder="Required for electronic refund"/></label></div>
       <label>Reason<input value={reason} onChange={e=>setReason(e.target.value)} placeholder="e.g. Customer changed mind, faulty accessory"/></label>
       <div className="return-total"><span>Refund total</span><strong>{money(refundTotal)}</strong></div>
@@ -1408,7 +1408,7 @@ function InventoryControl({products,phones,settings,onNavigate}){
     <div className="section-head"><div><h2>Inventory Control</h2><p>Monitor stock value, low-stock alerts and auditable inventory movement history.</p></div><div className="section-actions"><button className="secondary" onClick={csv}><Download size={16}/> Export CSV</button><button className="primary" onClick={load}><History size={16}/> Refresh</button></div></div>
     <div className="inventory-control-stats"><Stat label="Accessory Units" value={accessoryUnits} icon={Package}/><Stat label="Phones In Stock" value={phonesInStock} icon={Smartphone}/><Stat label="Inventory Cost Value" value={money(inventoryValue)} icon={WalletCards}/><Stat label="Low-Stock Items" value={lowStock.length} icon={AlertTriangle}/></div>
     <div className="grid2 inventory-control-grid">
-      <div className="panel"><div className="panel-title"><h3>Low Stock Alerts</h3><span>{lowStock.length} item(s) Â· threshold {lowThreshold}</span></div>{lowStock.length?lowStock.slice(0,12).map(p=><div className="inventory-alert-row" key={p.id}><div><b>{p.name}</b><small>{p.category||"Product"} Â· cost {money(p.cost)}</small></div><strong>{p.stock} left</strong></div>):<div className="empty">No low-stock items.</div>}<button className="secondary full" onClick={()=>onNavigate("Products & Inventory")}><Package size={15}/> Open Products & Inventory</button></div>
+      <div className="panel"><div className="panel-title"><h3>Low Stock Alerts</h3><span>{lowStock.length} item(s) · threshold {lowThreshold}</span></div>{lowStock.length?lowStock.slice(0,12).map(p=><div className="inventory-alert-row" key={p.id}><div><b>{p.name}</b><small>{p.category||"Product"} · cost {money(p.cost)}</small></div><strong>{p.stock} left</strong></div>):<div className="empty">No low-stock items.</div>}<button className="secondary full" onClick={()=>onNavigate("Products & Inventory")}><Package size={15}/> Open Products & Inventory</button></div>
       <div className="panel"><div className="panel-title"><h3>Stock Health</h3><span>Current inventory</span></div><div className="inventory-health inventory-health-large"><div><b>{products.length}</b><span>Products</span></div><div><b>{accessoryUnits}</b><span>Accessory units</span></div><div><b>{phonesInStock}</b><span>Phone units</span></div><div><b>{lowStock.filter(p=>Number(p.stock)===0).length}</b><span>Out of stock</span></div></div><div className="inventory-value-row"><span>Accessory cost value</span><strong>{money(products.reduce((s,p)=>s+Number(p.stock||0)*Number(p.cost||0),0))}</strong></div><div className="inventory-value-row"><span>Phone cost value</span><strong>{money(phones.filter(p=>p.status==="In Stock").reduce((s,p)=>s+Number(p.cost||0),0))}</strong></div><div className="inventory-value-row"><span>Total cost value</span><strong>{money(inventoryValue)}</strong></div></div>
     </div>
     <div className="panel inventory-movement-panel"><div className="panel-title"><div><h3>Accessory Stock Movement</h3><span>Manual adjustments recorded in the inventory ledger.</span></div><span>{filtered.length} movement(s)</span></div>
@@ -1477,14 +1477,14 @@ function Products({products,reload,canManage=true}){
       <button className="primary full" disabled={busy} onClick={save}>{busy?<><LoaderCircle size={16} className="spin"/> Saving...</>:editing?"Save Changes":"Save Product"}</button>
     </Modal>}
     {scannerOpen&&<BarcodeScanner onClose={()=>setScannerOpen(false)} onDetected={value=>{setBarcode(value);setScannerOpen(false)}}/>}
-    {adjustOpen&&<Modal title={`Adjust Stock Â· ${adjustOpen.name}`} close={()=>!busy&&setAdjustOpen(null)}>
+    {adjustOpen&&<Modal title={`Adjust Stock · ${adjustOpen.name}`} close={()=>!busy&&setAdjustOpen(null)}>
       <div className="balance-box"><span>Current stock</span><strong>{adjustOpen.stock}</strong></div>
       <div className="form-grid-2"><label>Adjustment<select value={adjustType} onChange={e=>setAdjustType(e.target.value)}><option value="increase">Increase stock (+)</option><option value="decrease">Decrease stock (âˆ’)</option></select></label><label>Quantity<input type="number" min="1" step="1" value={adjustQty} onChange={e=>setAdjustQty(e.target.value)} placeholder="0"/></label></div>
       <label>Reason<select value={adjustReason} onChange={e=>setAdjustReason(e.target.value)}><option>Stock correction</option><option>Damaged</option><option>Lost</option><option>Found</option><option>Internal use</option><option>Opening balance</option><option>Physical count</option><option>Other</option></select></label>
       <label>Note<textarea value={adjustNote} onChange={e=>setAdjustNote(e.target.value)} placeholder="Optional explanation..."/></label>
       <button className="primary full" disabled={busy} onClick={adjustStock}>{busy?<><LoaderCircle size={16} className="spin"/> Updating...</>:"Confirm Stock Adjustment"}</button>
     </Modal>}
-    {historyOpen&&<Modal title={`Stock History Â· ${historyOpen.name}`} close={()=>setHistoryOpen(null)}>
+    {historyOpen&&<Modal title={`Stock History · ${historyOpen.name}`} close={()=>setHistoryOpen(null)}>
       <div className="balance-box"><span>Current stock</span><strong>{historyOpen.stock}</strong></div>
       <div className="table-panel inventory-history-table"><table><thead><tr><th>Date</th><th>Change</th><th>Before</th><th>After</th><th>Reason</th><th>Note</th></tr></thead><tbody>{movementLoading?<tr><td colSpan="6" className="empty">Loading stock history...</td></tr>:movements.length?movements.map(m=><tr key={m.id}><td>{new Date(m.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}</td><td><b className={Number(m.change_qty)>=0?"balance-clear":"balance-due"}>{Number(m.change_qty)>=0?"+":""}{m.change_qty}</b></td><td>{m.stock_before}</td><td><b>{m.stock_after}</b></td><td>{m.reason}</td><td>{m.note||"â€”"}</td></tr>):<tr><td colSpan="6" className="empty">No manual stock adjustments recorded.</td></tr>}</tbody></table></div>
     </Modal>}
@@ -1599,7 +1599,7 @@ function Purchases({products,reload}){
     if(!supplierId){alert("Select a supplier before receiving the purchase.");return;}
     if(!items.length){alert("Add at least one item to the purchase.");return;}
     const paid=Number(initialPayment||0);
-    if(!Number.isFinite(paid)||paid<0||paid>total){alert(`Initial payment must be between â‚µ0.00 and ${money(total)}.`);return;}
+    if(!Number.isFinite(paid)||paid<0||paid>total){alert(`Initial payment must be between ₵0.00 and ${money(total)}.`);return;}
     if(paid>0 && ["MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].includes(paymentMethod) && !paymentRef.trim()){alert("Enter the transaction reference for this electronic payment.");return;}
     setBusy(true);
     try{
@@ -1716,11 +1716,11 @@ function Purchases({products,reload}){
       {(search||filterSupplier||dateFrom||dateTo)&&<button className="secondary" onClick={()=>{setSearch("");setFilterSupplier("");setDateFrom("");setDateTo("")}}>Clear</button>}
     </div>
     <div className="table-panel"><table><thead><tr><th>Purchase</th><th>Supplier</th><th>Date</th><th>Items</th><th>Total</th><th>Action</th></tr></thead><tbody>
-      {loadingHistory?<tr><td colSpan="6" className="empty">Loading purchases...</td></tr>:filteredHistory.map(p=><tr key={p.id}><td><b>{p.purchase_no}</b><small>{p.invoice_no?`Invoice: ${p.invoice_no}`:"No invoice"}</small></td><td>{p.supplier||"â€”"}</td><td>{p.purchase_date}</td><td><b>{Number(p.item_count||0)}</b><small>{Number(p.phone_units||0)} phone Â· {Number(p.accessory_units||0)} accessory units</small></td><td><b>{money(p.total)}</b></td><td><button className="table-action" onClick={()=>openDetail(p)}><Eye size={14}/> View</button></td></tr>)}
+      {loadingHistory?<tr><td colSpan="6" className="empty">Loading purchases...</td></tr>:filteredHistory.map(p=><tr key={p.id}><td><b>{p.purchase_no}</b><small>{p.invoice_no?`Invoice: ${p.invoice_no}`:"No invoice"}</small></td><td>{p.supplier||"â€”"}</td><td>{p.purchase_date}</td><td><b>{Number(p.item_count||0)}</b><small>{Number(p.phone_units||0)} phone · {Number(p.accessory_units||0)} accessory units</small></td><td><b>{money(p.total)}</b></td><td><button className="table-action" onClick={()=>openDetail(p)}><Eye size={14}/> View</button></td></tr>)}
       {!loadingHistory&&!filteredHistory.length&&<tr><td colSpan="6" className="empty">No purchases match your filters.</td></tr>}
     </tbody></table></div>
 
-    {detail&&<div className="modal-bg"><div className="modal purchase-detail-modal"><div className="modal-head"><div><h3>Purchase Details</h3><small className="modal-sub">{detail.purchase_no} Â· {detail.supplier||"No supplier"}</small></div><button onClick={()=>setDetail(null)}><X/></button></div>{detailLoading?<div className="empty">Loading purchase details...</div>:<><div className="detail-summary"><div><span>Supplier</span><b>{detail.supplier||"â€”"}</b></div><div><span>Purchase date</span><b>{detail.purchase_date}</b></div><div><span>Invoice</span><b>{detail.invoice_no||"â€”"}</b></div><div><span>Total</span><b>{money(detail.total)}</b></div></div><h4>Purchased Items</h4><div className="table-panel"><table><thead><tr><th>Product</th><th>Type</th><th>IMEI</th><th>Qty</th><th>Unit Cost</th><th>Total</th></tr></thead><tbody>{detailItems.length?detailItems.map(i=><tr key={i.id}><td><b>{i.product_name}</b>{i.brand&&<small>{i.brand} {i.model||""}</small>}</td><td>{i.item_type}</td><td>{i.imei_1||"â€”"}</td><td>{i.quantity}</td><td>{money(i.unit_cost)}</td><td><b>{money(Number(i.unit_cost||0)*Number(i.quantity||1))}</b></td></tr>):<tr><td colSpan="6" className="empty">No items found.</td></tr>}</tbody></table></div><h4>Supplier Payments</h4><div className="table-panel"><table><thead><tr><th>Date</th><th>Method</th><th>Reference</th><th>Amount</th></tr></thead><tbody>{detailPayments.length?detailPayments.map(x=><tr key={x.id}><td>{new Date(x.paid_at).toLocaleDateString("en-GH")}</td><td>{x.payment_method||"Cash"}</td><td>{x.reference||"â€”"}</td><td><b>{money(x.amount)}</b></td></tr>):<tr><td colSpan="4" className="empty">No supplier payments recorded.</td></tr>}</tbody></table></div><div className="detail-footer"><strong>Purchase Total: {money(detail.total)}</strong><button className="secondary" onClick={printPurchase}><FileText size={15}/> Print Purchase</button></div></>}</div></div>}
+    {detail&&<div className="modal-bg"><div className="modal purchase-detail-modal"><div className="modal-head"><div><h3>Purchase Details</h3><small className="modal-sub">{detail.purchase_no} · {detail.supplier||"No supplier"}</small></div><button onClick={()=>setDetail(null)}><X/></button></div>{detailLoading?<div className="empty">Loading purchase details...</div>:<><div className="detail-summary"><div><span>Supplier</span><b>{detail.supplier||"â€”"}</b></div><div><span>Purchase date</span><b>{detail.purchase_date}</b></div><div><span>Invoice</span><b>{detail.invoice_no||"â€”"}</b></div><div><span>Total</span><b>{money(detail.total)}</b></div></div><h4>Purchased Items</h4><div className="table-panel"><table><thead><tr><th>Product</th><th>Type</th><th>IMEI</th><th>Qty</th><th>Unit Cost</th><th>Total</th></tr></thead><tbody>{detailItems.length?detailItems.map(i=><tr key={i.id}><td><b>{i.product_name}</b>{i.brand&&<small>{i.brand} {i.model||""}</small>}</td><td>{i.item_type}</td><td>{i.imei_1||"â€”"}</td><td>{i.quantity}</td><td>{money(i.unit_cost)}</td><td><b>{money(Number(i.unit_cost||0)*Number(i.quantity||1))}</b></td></tr>):<tr><td colSpan="6" className="empty">No items found.</td></tr>}</tbody></table></div><h4>Supplier Payments</h4><div className="table-panel"><table><thead><tr><th>Date</th><th>Method</th><th>Reference</th><th>Amount</th></tr></thead><tbody>{detailPayments.length?detailPayments.map(x=><tr key={x.id}><td>{new Date(x.paid_at).toLocaleDateString("en-GH")}</td><td>{x.payment_method||"Cash"}</td><td>{x.reference||"â€”"}</td><td><b>{money(x.amount)}</b></td></tr>):<tr><td colSpan="4" className="empty">No supplier payments recorded.</td></tr>}</tbody></table></div><div className="detail-footer"><strong>Purchase Total: {money(detail.total)}</strong><button className="secondary" onClick={printPurchase}><FileText size={15}/> Print Purchase</button></div></>}</div></div>}
 
     {open&&<div className="modal-bg"><div className="modal purchase-modal"><div className="modal-head"><div><h3>New Purchase / Stock In</h3><small className="modal-sub">Phones are stored as individual IMEI units.</small></div><button onClick={()=>setOpen(false)}><X/></button></div>
       <div className="form-grid two"><label>Supplier*<select value={supplierId} onChange={e=>{setSupplierId(e.target.value);const chosen=suppliers.find(x=>String(x.id)===String(e.target.value));setSupplier(chosen?.name||"")}}><option value="">Select supplier...</option>{suppliers.filter(x=>x.active!==false).map(x=><option key={x.id} value={x.id}>{x.name}{x.phone?` â€” ${x.phone}`:""}</option>)}</select></label><label>Invoice No.<input value={invoice} onChange={e=>setInvoice(e.target.value)} placeholder="Optional"/></label><label>Purchase date<input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label></div>
@@ -1730,7 +1730,7 @@ function Purchases({products,reload}){
 
       <div className="draft-list"><div className="draft-head"><b>Purchase Items</b><span>{items.length} line{items.length===1?"":"s"}</span></div>{items.length?<>{items.map((i,n)=><div className="draft-line" key={n}><div><b>{i.product_name}</b><small>{i.type==="phone"?`IMEI: ${i.imei_1}`:`Qty ${i.quantity} Ã— ${money(i.unit_cost)}`}</small></div><strong>{money(i.type==="phone"?i.cost:Number(i.unit_cost)*Number(i.quantity))}</strong><button onClick={()=>setItems(x=>x.filter((_,idx)=>idx!==n))}><X size={14}/></button></div>)}</>:<div className="empty-mini">No items added yet.</div>}</div>
       <div className="purchase-payment-box"><div className="purchase-total"><span>Total Purchase Cost</span><strong>{money(total)}</strong></div><div className="form-grid two"><label>Paid to supplier now (GHS)<input type="number" min="0" step="0.01" max={total} value={initialPayment} onChange={e=>setInitialPayment(e.target.value)} placeholder="0.00"/></label><label>Payment method<select value={paymentMethod} onChange={e=>setPaymentMethod(e.target.value)}>{["Cash","MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].map(x=><option key={x}>{x}</option>)}</select></label><label>Payment reference<input value={paymentRef} onChange={e=>setPaymentRef(e.target.value)} placeholder="Required for electronic payments"/></label></div><div className="purchase-balance-preview"><span>Supplier balance after purchase</span><strong>{money(Math.max(0,total-Number(initialPayment||0)))}</strong></div></div>
-      <button className="primary full" disabled={busy||!items.length||!supplierId} onClick={receive}>{busy?<><LoaderCircle size={16} className="spin"/> Receiving...</>:<>Receive Stock Â· {money(total)}</>}</button>
+      <button className="primary full" disabled={busy||!items.length||!supplierId} onClick={receive}>{busy?<><LoaderCircle size={16} className="spin"/> Receiving...</>:<>Receive Stock · {money(total)}</>}</button>
     </div></div>}
   </section>
 }
@@ -1760,12 +1760,12 @@ function Suppliers({role}){
     if(!statement)return;
     const rows=statement.events.map(x=>`<tr><td>${new Date(x.date).toLocaleDateString("en-GH")}</td><td>${x.type==="purchase"?"Purchase":"Payment"}</td><td>${x.ref||"â€”"}</td><td class="num">${x.type==="purchase"?money(x.amount):"â€”"}</td><td class="num">${x.type==="payment"?money(x.amount):"â€”"}</td><td class="num">${money(x.balance)}</td></tr>`).join("");
     const w=window.open("","_blank","width=900,height=700");if(!w)return;
-    w.document.write(`<html><head><title>Supplier Statement - ${statement.supplier.name}</title><style>body{font-family:Arial,sans-serif;padding:30px;color:#171717}h1{margin:0 0 4px}p{color:#666}.summary{display:flex;gap:12px;margin:20px 0}.box{border:1px solid #ddd;border-radius:8px;padding:12px;min-width:150px}.box b{display:block;font-size:18px;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border-bottom:1px solid #ddd;padding:9px;text-align:left;font-size:12px}.num{text-align:right}@media print{body{padding:10px}}</style></head><body><h1>G-LOKOO PHONES AND ACCESSORIES</h1><p>Supplier Statement Â· ${statement.supplier.name}</p><p>${statement.supplier.phone||""} ${statement.supplier.email||""}</p><div class="summary"><div class="box">Purchases<b>${money(statement.purchaseTotal)}</b></div><div class="box">Payments<b>${money(statement.paidTotal)}</b></div><div class="box">Balance<b>${money(statement.balance)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th class="num">Debit</th><th class="num">Credit</th><th class="num">Balance</th></tr></thead><tbody>${rows||'<tr><td colspan="6">No transactions.</td></tr>'}</tbody></table><script>window.onload=()=>{window.print()}</script></body></html>`);w.document.close();
+    w.document.write(`<html><head><title>Supplier Statement - ${statement.supplier.name}</title><style>body{font-family:Arial,sans-serif;padding:30px;color:#171717}h1{margin:0 0 4px}p{color:#666}.summary{display:flex;gap:12px;margin:20px 0}.box{border:1px solid #ddd;border-radius:8px;padding:12px;min-width:150px}.box b{display:block;font-size:18px;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border-bottom:1px solid #ddd;padding:9px;text-align:left;font-size:12px}.num{text-align:right}@media print{body{padding:10px}}</style></head><body><h1>G-LOKOO PHONES AND ACCESSORIES</h1><p>Supplier Statement · ${statement.supplier.name}</p><p>${statement.supplier.phone||""} ${statement.supplier.email||""}</p><div class="summary"><div class="box">Purchases<b>${money(statement.purchaseTotal)}</b></div><div class="box">Payments<b>${money(statement.paidTotal)}</b></div><div class="box">Balance<b>${money(statement.balance)}</b></div></div><table><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th class="num">Debit</th><th class="num">Credit</th><th class="num">Balance</th></tr></thead><tbody>${rows||'<tr><td colspan="6">No transactions.</td></tr>'}</tbody></table><script>window.onload=()=>{window.print()}</script></body></html>`);w.document.close();
   }
   function reset(){setForm({name:"",phone:"",email:"",address:"",notes:""});setEditing(null)}
   async function save(){if(!form.name.trim()){alert("Supplier name is required.");return}setSaving(true);const payload={name:form.name.trim(),phone:form.phone.trim()||null,email:form.email.trim()||null,address:form.address.trim()||null,notes:form.notes.trim()||null};const q=editing?supabase.from("suppliers").update(payload).eq("id",editing.id):supabase.from("suppliers").insert(payload);const {error}=await q;setSaving(false);if(error)alert(error.message);else{setOpen(false);reset();load()}}
   async function toggleActive(s){const {error}=await supabase.from("suppliers").update({active:!s.active}).eq("id",s.id);if(error)alert(error.message);else load()}
-  async function recordPayment(){const amount=Number(payAmount||0);if(!payOpen||amount<=0){alert("Enter a payment amount greater than â‚µ0.00.");return}if(amount>Number(payOpen.balance||0)){alert(`Payment cannot exceed the outstanding balance of ${money(payOpen.balance)}.`);return}if(["MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].includes(payMethod)&&!payRef.trim()){alert("Enter the transaction reference.");return}const {data:{user}}=await supabase.auth.getUser();const {error}=await supabase.from("supplier_payments").insert({supplier_id:payOpen.id,amount,payment_method:payMethod,reference:payRef.trim()||null,paid_by:user?.id||null});if(error)alert(error.message);else{alert(`Supplier payment of ${money(amount)} recorded.`);setPayOpen(null);setPayAmount("");setPayRef("");load()}}
+  async function recordPayment(){const amount=Number(payAmount||0);if(!payOpen||amount<=0){alert("Enter a payment amount greater than ₵0.00.");return}if(amount>Number(payOpen.balance||0)){alert(`Payment cannot exceed the outstanding balance of ${money(payOpen.balance)}.`);return}if(["MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].includes(payMethod)&&!payRef.trim()){alert("Enter the transaction reference.");return}const {data:{user}}=await supabase.auth.getUser();const {error}=await supabase.from("supplier_payments").insert({supplier_id:payOpen.id,amount,payment_method:payMethod,reference:payRef.trim()||null,paid_by:user?.id||null});if(error)alert(error.message);else{alert(`Supplier payment of ${money(amount)} recorded.`);setPayOpen(null);setPayAmount("");setPayRef("");load()}}
   const filtered=suppliers.filter(s=>{const text=`${s.name} ${s.phone||""} ${s.email||""}`.toLowerCase();const matchesSearch=text.includes(search.toLowerCase());const matchesStatus=statusFilter==="all"||(statusFilter==="active"&&s.active)||(statusFilter==="inactive"&&!s.active);return matchesSearch&&matchesStatus;});
   function exportSuppliers(){
     const headers=["Supplier","Phone","Email","Address","Status","Purchase Value","Paid","Balance"];
@@ -1779,8 +1779,8 @@ function Suppliers({role}){
     <div className="panel customer-toolbar supplier-toolbar"><div className="searchbar"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search supplier name, phone or email..."/></div><div className="supplier-toolbar-actions"><label className="supplier-status-filter">Status<select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}><option value="all">All suppliers</option><option value="active">Active only</option><option value="inactive">Inactive only</option></select></label><button className="secondary" onClick={exportSuppliers} disabled={!filtered.length}><Download size={15}/> Export CSV</button></div></div>
     <div className="table-panel"><table><thead><tr><th>Supplier</th><th>Contact</th><th>Purchases</th><th>Paid</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead><tbody>{loading&&<tr><td colSpan="7" className="empty">Loading suppliers...</td></tr>}{!loading&&!filtered.length&&<tr><td colSpan="7" className="empty">No suppliers found.</td></tr>}{!loading&&filtered.map(s=><tr key={s.id}><td><b>{s.name}</b><small>{s.email||s.address||""}</small></td><td>{s.phone||"â€”"}</td><td>{money(s.purchase_total)}</td><td>{money(s.paid_total)}</td><td><b className={Number(s.balance)>0?"balance-due":"balance-clear"}>{money(s.balance)}</b></td><td><span className={`badge ${s.active?"ok":"warn"}`}>{s.active?"Active":"Inactive"}</span></td><td><div className="table-actions"><button className="table-action" onClick={()=>loadStatement(s)}>Statement</button><button className="table-action" onClick={()=>{setPayOpen(s);setPayAmount("");setPayMethod("Cash");setPayRef("");loadPayments(s.id)}} disabled={!canManage||Number(s.balance)<=0}>Pay</button>{canManage&&<button className="table-action" onClick={()=>{setEditing(s);setForm({name:s.name,phone:s.phone||"",email:s.email||"",address:s.address||"",notes:s.notes||""});setOpen(true)}}>Edit</button>}{canManage&&<button className="table-action" onClick={()=>toggleActive(s)}>{s.active?"Deactivate":"Activate"}</button>}</div></td></tr>)}</tbody></table></div>
     {open&&<Modal title={editing?"Edit Supplier":"Add Supplier"} close={()=>!saving&&setOpen(false)}><div className="form-grid two"><label>Supplier name*<input value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Phone<input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></label><label>Email<input type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label><label>Address<input value={form.address} onChange={e=>setForm({...form,address:e.target.value})}/></label><label>Notes<textarea value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})}/></label></div><button className="primary full" disabled={saving} onClick={save}>{saving?<><LoaderCircle size={16} className="spin"/> Saving...</>:"Save Supplier"}</button></Modal>}
-    {statementOpen&&<Modal title={`Supplier Statement Â· ${statementOpen.name}`} close={()=>{setStatementOpen(null);setStatement(null)}}><div className="statement-actions"><button className="secondary" onClick={printStatement} disabled={!statement}><FileText size={15}/> Print Statement</button></div>{statementLoading?<div className="empty">Loading supplier statement...</div>:statement&&<><div className="stats supplier-statement-stats"><Stat label="Purchases" value={money(statement.purchaseTotal)} icon={ReceiptText}/><Stat label="Payments" value={money(statement.paidTotal)} icon={WalletCards}/><Stat label="Balance" value={money(statement.balance)} icon={Banknote}/></div><div className="statement-meta"><b>{statement.supplier.name}</b><span>{statement.supplier.phone||""}{statement.supplier.email?` Â· ${statement.supplier.email}`:""}</span></div><div className="table-panel supplier-statement-table"><table><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>{statement.events.length?statement.events.slice().reverse().map(x=><tr key={x.id}><td>{new Date(x.date).toLocaleDateString("en-GH")}</td><td><span className={`badge ${x.type==="purchase"?"warn":"ok"}`}>{x.type==="purchase"?"Purchase":"Payment"}</span></td><td><b>{x.ref||"â€”"}</b>{x.invoice&&<small>Invoice: {x.invoice}</small>}{x.method&&<small>{x.method}</small>}</td><td>{x.type==="purchase"?money(x.amount):"â€”"}</td><td>{x.type==="payment"?money(x.amount):"â€”"}</td><td><b>{money(x.balance)}</b></td></tr>):<tr><td colSpan="6" className="empty">No transactions found.</td></tr>}</tbody></table></div></>}</Modal>}
-    {payOpen&&<Modal title={`Supplier Payment Â· ${payOpen.name}`} close={()=>setPayOpen(null)}><div className="balance-box"><span>Outstanding supplier balance</span><strong>{money(payOpen.balance)}</strong></div><label>Amount paid (GHS)*<input type="number" min="0.01" step="0.01" max={payOpen.balance} value={payAmount} onChange={e=>setPayAmount(e.target.value)} placeholder="0.00"/></label><label>Payment method<select value={payMethod} onChange={e=>setPayMethod(e.target.value)}>{["Cash","MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].map(x=><option key={x}>{x}</option>)}</select></label><label>Reference<input value={payRef} onChange={e=>setPayRef(e.target.value)} placeholder="Optional / transaction reference"/></label>{payments.length>0&&<div className="supplier-payment-history"><b>Recent payments</b>{payments.slice(0,5).map(x=><div key={x.id}><span>{new Date(x.paid_at).toLocaleDateString("en-GH")} Â· {x.payment_method}</span><strong>{money(x.amount)}</strong></div>)}</div>}<button className="primary full" onClick={recordPayment}>Record Payment Â· {money(Number(payAmount||0))}</button></Modal>}
+    {statementOpen&&<Modal title={`Supplier Statement · ${statementOpen.name}`} close={()=>{setStatementOpen(null);setStatement(null)}}><div className="statement-actions"><button className="secondary" onClick={printStatement} disabled={!statement}><FileText size={15}/> Print Statement</button></div>{statementLoading?<div className="empty">Loading supplier statement...</div>:statement&&<><div className="stats supplier-statement-stats"><Stat label="Purchases" value={money(statement.purchaseTotal)} icon={ReceiptText}/><Stat label="Payments" value={money(statement.paidTotal)} icon={WalletCards}/><Stat label="Balance" value={money(statement.balance)} icon={Banknote}/></div><div className="statement-meta"><b>{statement.supplier.name}</b><span>{statement.supplier.phone||""}{statement.supplier.email?` · ${statement.supplier.email}`:""}</span></div><div className="table-panel supplier-statement-table"><table><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>{statement.events.length?statement.events.slice().reverse().map(x=><tr key={x.id}><td>{new Date(x.date).toLocaleDateString("en-GH")}</td><td><span className={`badge ${x.type==="purchase"?"warn":"ok"}`}>{x.type==="purchase"?"Purchase":"Payment"}</span></td><td><b>{x.ref||"â€”"}</b>{x.invoice&&<small>Invoice: {x.invoice}</small>}{x.method&&<small>{x.method}</small>}</td><td>{x.type==="purchase"?money(x.amount):"â€”"}</td><td>{x.type==="payment"?money(x.amount):"â€”"}</td><td><b>{money(x.balance)}</b></td></tr>):<tr><td colSpan="6" className="empty">No transactions found.</td></tr>}</tbody></table></div></>}</Modal>}
+    {payOpen&&<Modal title={`Supplier Payment · ${payOpen.name}`} close={()=>setPayOpen(null)}><div className="balance-box"><span>Outstanding supplier balance</span><strong>{money(payOpen.balance)}</strong></div><label>Amount paid (GHS)*<input type="number" min="0.01" step="0.01" max={payOpen.balance} value={payAmount} onChange={e=>setPayAmount(e.target.value)} placeholder="0.00"/></label><label>Payment method<select value={payMethod} onChange={e=>setPayMethod(e.target.value)}>{["Cash","MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].map(x=><option key={x}>{x}</option>)}</select></label><label>Reference<input value={payRef} onChange={e=>setPayRef(e.target.value)} placeholder="Optional / transaction reference"/></label>{payments.length>0&&<div className="supplier-payment-history"><b>Recent payments</b>{payments.slice(0,5).map(x=><div key={x.id}><span>{new Date(x.paid_at).toLocaleDateString("en-GH")} · {x.payment_method}</span><strong>{money(x.amount)}</strong></div>)}</div>}<button className="primary full" onClick={recordPayment}>Record Payment · {money(Number(payAmount||0))}</button></Modal>}
   </section>
 }
 
@@ -1824,7 +1824,7 @@ function Customers({customers,reload,role}){
   async function recordPayment(){
     if(!paymentSale)return;
     const amount=Number(paymentAmount||0);
-    if(!Number.isFinite(amount)||amount<=0){alert("Enter a payment amount greater than â‚µ0.00.");return;}
+    if(!Number.isFinite(amount)||amount<=0){alert("Enter a payment amount greater than ₵0.00.");return;}
     if(amount>Number(paymentSale.balance_due||0)){alert(`Payment cannot exceed the outstanding balance of ${money(paymentSale.balance_due)}.`);return;}
     if(["MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer"].includes(paymentMethod)&&!paymentRef.trim()){alert("Please enter the transaction reference.");return;}
     setPaying(true);
@@ -1860,15 +1860,15 @@ ${e.message||e}`)}
       <label>Address<input value={address} onChange={e=>setAddress(e.target.value)} placeholder="Optional"/></label>
       <button className="primary full" onClick={save}>Save Customer</button>
     </Modal>}
-    {historyOpen&&<div className="modal-bg"><div className="modal history-modal"><div className="modal-head"><div><h3>{historyOpen.name}</h3><small className="modal-sub">{historyOpen.phone||"No phone"} Â· Purchase history</small></div><button onClick={()=>setHistoryOpen(null)}><X/></button></div>
-      {loading?<div className="empty-mini">Loading purchase history...</div>:history.length?<div className="history-list">{history.map(s=><div className="history-card" key={s.id}><div className="history-card-head"><div><b>{s.receipt_no}</b><small>{new Date(s.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}</small></div><strong>{money(s.total)}</strong></div><div>{(s.sale_items||[]).map((i,n)=><div className="history-item" key={n}><span>{i.product_name}{i.imei?<small>IMEI: {i.imei}</small>:<small>{i.quantity} Ã— {money(i.unit_price)}</small>}</span><b>{money(i.line_total)}</b></div>)}</div><div className="history-payment">Payment: {s.payment_method} Â· {s.payment_status||"Paid"}{Number(s.amount_paid||0)>0?` Â· Paid ${money(s.amount_paid)}`:""}{Number(s.balance_due||0)>0?` Â· Balance ${money(s.balance_due)}`:""}{s.due_date?` Â· Due ${new Date(`${s.due_date}T00:00:00`).toLocaleDateString("en-GH")}`:""}{Number(s.balance_due||0)>0&&<button className="table-action" onClick={()=>{setPaymentSale(s);setPaymentAmount("");setPaymentMethod("Cash");setPaymentRef("")}}>Record Payment</button>}</div></div>)}</div>:<div className="empty-mini">No purchases recorded for this customer.</div>}
+    {historyOpen&&<div className="modal-bg"><div className="modal history-modal"><div className="modal-head"><div><h3>{historyOpen.name}</h3><small className="modal-sub">{historyOpen.phone||"No phone"} · Purchase history</small></div><button onClick={()=>setHistoryOpen(null)}><X/></button></div>
+      {loading?<div className="empty-mini">Loading purchase history...</div>:history.length?<div className="history-list">{history.map(s=><div className="history-card" key={s.id}><div className="history-card-head"><div><b>{s.receipt_no}</b><small>{new Date(s.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}</small></div><strong>{money(s.total)}</strong></div><div>{(s.sale_items||[]).map((i,n)=><div className="history-item" key={n}><span>{i.product_name}{i.imei?<small>IMEI: {i.imei}</small>:<small>{i.quantity} Ã— {money(i.unit_price)}</small>}</span><b>{money(i.line_total)}</b></div>)}</div><div className="history-payment">Payment: {s.payment_method} · {s.payment_status||"Paid"}{Number(s.amount_paid||0)>0?` · Paid ${money(s.amount_paid)}`:""}{Number(s.balance_due||0)>0?` · Balance ${money(s.balance_due)}`:""}{s.due_date?` · Due ${new Date(`${s.due_date}T00:00:00`).toLocaleDateString("en-GH")}`:""}{Number(s.balance_due||0)>0&&<button className="table-action" onClick={()=>{setPaymentSale(s);setPaymentAmount("");setPaymentMethod("Cash");setPaymentRef("")}}>Record Payment</button>}</div></div>)}</div>:<div className="empty-mini">No purchases recorded for this customer.</div>}
     </div></div>}
-    {paymentSale&&<Modal title={`Record Payment Â· ${paymentSale.receipt_no}`} close={()=>!paying&&setPaymentSale(null)}>
+    {paymentSale&&<Modal title={`Record Payment · ${paymentSale.receipt_no}`} close={()=>!paying&&setPaymentSale(null)}>
       <div className="balance-box"><span>Outstanding balance</span><strong>{money(paymentSale.balance_due)}</strong></div>
       <label>Amount paid (GHS)*<input type="number" min="0.01" step="0.01" max={paymentSale.balance_due} value={paymentAmount} onChange={e=>setPaymentAmount(e.target.value)} placeholder="0.00"/></label>
       <label>Payment method<select value={paymentMethod} onChange={e=>setPaymentMethod(e.target.value)}>{["Cash","MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].map(x=><option key={x}>{x}</option>)}</select></label>
       {["MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer"].includes(paymentMethod)&&<label>Transaction reference*<input value={paymentRef} onChange={e=>setPaymentRef(e.target.value)} placeholder="Reference number"/></label>}
-      <button className="primary full" disabled={paying} onClick={recordPayment}>{paying?<><LoaderCircle size={16} className="spin"/> Recording...</>:<>Record Payment Â· {money(Number(paymentAmount||0))}</>}</button>
+      <button className="primary full" disabled={paying} onClick={recordPayment}>{paying?<><LoaderCircle size={16} className="spin"/> Recording...</>:<>Record Payment · {money(Number(paymentAmount||0))}</>}</button>
     </Modal>}
   </section>
 }
@@ -1949,36 +1949,36 @@ function Repairs({customers=[]}){
       {loading&&<div className="empty-mini">Loading repair jobs...</div>}
       {!loading&&!filtered.length&&<div className="empty-mini">{repairs.length?"No repair jobs match your search.":"No repair jobs yet. Click New Repair to create the first ticket."}</div>}
       {!loading&&filtered.map(r=><div className="repair-ticket" key={r.id}>
-        <div className="repair-ticket-top"><div><b>{r.job_no}</b><small>{new Date(r.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}{r.completed_at?` Â· Collected ${new Date(r.completed_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}`:""}</small></div><select className={`status-select status-${String(r.status||"").toLowerCase()}`} value={r.status} onChange={e=>updateStatus(r,e.target.value)}>{statuses.map(s=><option key={s}>{s}</option>)}</select></div>
+        <div className="repair-ticket-top"><div><b>{r.job_no}</b><small>{new Date(r.created_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}{r.completed_at?` · Collected ${new Date(r.completed_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}`:""}</small></div><select className={`status-select status-${String(r.status||"").toLowerCase()}`} value={r.status} onChange={e=>updateStatus(r,e.target.value)}>{statuses.map(s=><option key={s}>{s}</option>)}</select></div>
         <div className="repair-ticket-grid"><div><span>Customer</span><strong>{customerName(r.customer_id)}</strong></div><div><span>Device</span><strong>{r.device}</strong></div><div><span>IMEI</span><strong>{r.imei||"â€”"}</strong></div><div><span>Technician</span><strong>{techName(r.technician_id)}</strong></div></div>
         <div className="repair-fault"><span>Reported fault</span><p>{r.fault}</p>{r.notes&&<small>{r.notes}</small>}</div>
         <div className="repair-ticket-bottom"><div><span>Repair cost</span><strong>{money(r.repair_cost)}</strong></div><div><span>Paid</span><strong>{money(r.amount_paid||0)}</strong></div><div><span>Balance</span><strong className={Number(r.balance_due||0)>0?"balance-text":"paid-text"}>{money(r.balance_due||0)}</strong></div><button className="table-action" onClick={()=>viewStatusHistory(r)}>History</button>{Number(r.balance_due||0)>0&&r.status!=="Cancelled"&&<button className="table-action" onClick={()=>{setPaymentRepair(r);setPaymentAmount("");setPaymentMethod("Cash");setPaymentRef("")}}>Record Payment</button>}</div>
       </div>)}
     </div>
     {open&&<Modal title="New Repair Job" close={()=>!busy&&setOpen(false)}>
-      <label>Customer*<select value={form.customer_id} onChange={e=>setForm({...form,customer_id:e.target.value})}><option value="">Select customer</option>{customers.map(c=><option key={c.id} value={c.id}>{c.name} Â· {c.phone||"No phone"}</option>)}</select></label>
+      <label>Customer*<select value={form.customer_id} onChange={e=>setForm({...form,customer_id:e.target.value})}><option value="">Select customer</option>{customers.map(c=><option key={c.id} value={c.id}>{c.name} · {c.phone||"No phone"}</option>)}</select></label>
       <label>Device / Phone*<input value={form.device} onChange={e=>setForm({...form,device:e.target.value})} placeholder="Samsung Galaxy A17"/></label>
       <label>IMEI<input value={form.imei} onChange={e=>setForm({...form,imei:e.target.value})} placeholder="Optional IMEI"/></label>
       <label>Reported fault*<textarea value={form.fault} onChange={e=>setForm({...form,fault:e.target.value})} placeholder="Describe the customer's problem" rows="3"/></label>
-      <label>Technician<select value={form.technician_id} onChange={e=>setForm({...form,technician_id:e.target.value})}><option value="">Unassigned</option>{technicians.map(t=><option key={t.id} value={t.id}>{t.full_name||t.id} Â· {t.role}</option>)}</select></label>
+      <label>Technician<select value={form.technician_id} onChange={e=>setForm({...form,technician_id:e.target.value})}><option value="">Unassigned</option>{technicians.map(t=><option key={t.id} value={t.id}>{t.full_name||t.id} · {t.role}</option>)}</select></label>
       <div className="form-grid-2"><label>Repair cost (GHS)<input type="number" min="0" step="0.01" value={form.repair_cost} onChange={e=>setForm({...form,repair_cost:e.target.value})}/></label><label>Amount paid<input type="number" min="0" step="0.01" value={form.amount_paid} onChange={e=>setForm({...form,amount_paid:e.target.value})}/></label></div>
       <div className="form-grid-2"><label>Due date<input type="date" value={form.due_date} onChange={e=>setForm({...form,due_date:e.target.value})}/></label><label>Status<select value={form.status} onChange={e=>setForm({...form,status:e.target.value})}>{statuses.map(s=><option key={s}>{s}</option>)}</select></label></div>
       <label>Notes<input value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} placeholder="Accessories received, password, parts needed, etc."/></label>
-      <button className="primary full" disabled={busy} onClick={save}>{busy?<><LoaderCircle size={16} className="spin"/> Saving...</>:<>Create Repair Â· {money(Number(form.repair_cost||0))}</>}</button>
+      <button className="primary full" disabled={busy} onClick={save}>{busy?<><LoaderCircle size={16} className="spin"/> Saving...</>:<>Create Repair · {money(Number(form.repair_cost||0))}</>}</button>
     </Modal>}
-    {historyRepair&&<Modal title={`Repair History Â· ${historyRepair.job_no}`} close={()=>setHistoryRepair(null)}>
-      <div className="repair-history-head"><b>{historyRepair.device}</b><span>{customerName(historyRepair.customer_id)} Â· Current status: {historyRepair.status}</span></div>
+    {historyRepair&&<Modal title={`Repair History · ${historyRepair.job_no}`} close={()=>setHistoryRepair(null)}>
+      <div className="repair-history-head"><b>{historyRepair.device}</b><span>{customerName(historyRepair.customer_id)} · Current status: {historyRepair.status}</span></div>
       {historyLoading?<div className="empty-mini">Loading status history...</div>:<div className="status-history-list">
         {!statusHistory.length&&<div className="empty-mini">No status changes recorded yet. The repair was created as <b>{historyRepair.status}</b>.</div>}
         {statusHistory.map(h=><div className="status-history-row" key={h.id}><div className="status-history-dot"/><div><b>{h.old_status||"Created"} â†’ {h.new_status}</b><small>{new Date(h.changed_at).toLocaleString("en-GH",{dateStyle:"medium",timeStyle:"short"})}</small></div></div>)}
       </div>}
     </Modal>}
-    {paymentRepair&&<Modal title={`Repair Payment Â· ${paymentRepair.job_no}`} close={()=>!paying&&setPaymentRepair(null)}>
+    {paymentRepair&&<Modal title={`Repair Payment · ${paymentRepair.job_no}`} close={()=>!paying&&setPaymentRepair(null)}>
       <div className="balance-box"><span>Outstanding repair balance</span><strong>{money(paymentRepair.balance_due)}</strong></div>
       <label>Amount paid (GHS)*<input type="number" min="0.01" step="0.01" max={paymentRepair.balance_due} value={paymentAmount} onChange={e=>setPaymentAmount(e.target.value)} placeholder="0.00"/></label>
       <label>Payment method<select value={paymentMethod} onChange={e=>setPaymentMethod(e.target.value)}>{["Cash","MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].map(x=><option key={x}>{x}</option>)}</select></label>
       {["MTN MoMo","Telecel Cash","AirtelTigo Money","Bank Transfer","Card"].includes(paymentMethod)&&<label>Transaction reference*<input value={paymentRef} onChange={e=>setPaymentRef(e.target.value)} placeholder="Reference number"/></label>}
-      <button className="primary full" disabled={paying} onClick={recordPayment}>{paying?<><LoaderCircle size={16} className="spin"/> Recording...</>:<>Record Payment Â· {money(Number(paymentAmount||0))}</>}</button>
+      <button className="primary full" disabled={paying} onClick={recordPayment}>{paying?<><LoaderCircle size={16} className="spin"/> Recording...</>:<>Record Payment · {money(Number(paymentAmount||0))}</>}</button>
     </Modal>}
   </section>
 }
@@ -2158,7 +2158,7 @@ function Expenses(){
   async function save(){
     const amount=Number(form.amount);
     if(!form.description.trim()) return alert("Enter an expense description.");
-    if(!Number.isFinite(amount)||amount<=0) return alert("Enter an expense amount greater than â‚µ0.00.");
+    if(!Number.isFinite(amount)||amount<=0) return alert("Enter an expense amount greater than ₵0.00.");
     setBusy(true);
     const {data:{user}}=await supabase.auth.getUser();
     const {error}=await supabase.from("expenses").insert({
@@ -2403,7 +2403,7 @@ function Reports(){
       </div>
     </div>
 
-    <div className="print-report-header"><h1>G-LOKOO PHONES AND ACCESSORIES</h1><p>Business Report Â· {from} to {to}</p></div>
+    <div className="print-report-header"><h1>G-LOKOO PHONES AND ACCESSORIES</h1><p>Business Report · {from} to {to}</p></div>
 
     {loading?<div className="empty-panel"><LoaderCircle size={35} className="spin"/><h3>Loading reports...</h3></div>:
     <>
@@ -2412,7 +2412,7 @@ function Reports(){
         <Stat label="Gross Profit After Returns" value={money(grossProfitAfterReturns)} icon={BarChart3}/><Stat label="Net Profit" value={money(netProfit)} icon={BarChart3}/><Stat label="Net Collected" value={money(netCollected)} icon={Banknote}/><Stat label="Outstanding Credit" value={money(outstanding)} icon={CreditCard}/>
       </div>
 
-      <div className="profit-banner"><div><span>NET BUSINESS PROFIT</span><strong className={netProfit>=0?"profit-positive":"profit-negative"}>{money(netProfit)}</strong><small>{margin.toFixed(1)}% margin Â· sales profit adjusted for returns + repair revenue âˆ’ expenses</small></div><div className="profit-side"><span>Inventory Cost Value</span><b>{money(inventoryCost)}</b><small>{products.length} product records + {phones.filter(p=>p.status==="In Stock").length} phones in stock</small></div></div>
+      <div className="profit-banner"><div><span>NET BUSINESS PROFIT</span><strong className={netProfit>=0?"profit-positive":"profit-negative"}>{money(netProfit)}</strong><small>{margin.toFixed(1)}% margin · sales profit adjusted for returns + repair revenue âˆ’ expenses</small></div><div className="profit-side"><span>Inventory Cost Value</span><b>{money(inventoryCost)}</b><small>{products.length} product records + {phones.filter(p=>p.status==="In Stock").length} phones in stock</small></div></div>
 
       <div className="reconciliation-strip"><div><span>Sales revenue</span><b>{money(salesTotal)}</b></div><div className="minus"><span>Returns</span><b>âˆ’ {money(returnTotal)}</b></div><div><span>Repair revenue</span><b>+ {money(repairRevenue)}</b></div><div className="total"><span>Net business revenue</span><b>{money(businessRevenue)}</b></div></div>
 
@@ -2428,18 +2428,18 @@ function Reports(){
       </div>
 
       <div className="grid2 report-lower">
-        <div className="panel"><div className="panel-title"><h3>Best Sellers</h3><span>Net units & profit</span></div>{bestSellers.length?bestSellers.map((x,i)=><div className="report-row" key={x.name}><span><b>#{i+1} {x.name}</b><small>{x.qty} net unit(s) Â· Profit {money(x.profit)}</small></span><strong>{money(x.revenue)}</strong></div>):<div className="empty">No product sales yet.</div>}</div>
+        <div className="panel"><div className="panel-title"><h3>Best Sellers</h3><span>Net units & profit</span></div>{bestSellers.length?bestSellers.map((x,i)=><div className="report-row" key={x.name}><span><b>#{i+1} {x.name}</b><small>{x.qty} net unit(s) · Profit {money(x.profit)}</small></span><strong>{money(x.revenue)}</strong></div>):<div className="empty">No product sales yet.</div>}</div>
         <div className="panel"><div className="panel-title"><h3>Expense Breakdown</h3><span>Selected period</span></div>{expenses.length?expenseByCategory.map(([cat,val])=><div className="report-row expense-row" key={cat}><span><b>{cat}</b><small className="report-meter"><i style={{width:`${Math.max(3,val/maxExpense*100)}%`}}/></small></span><strong>{money(val)}</strong></div>):<div className="empty">No expenses recorded.</div>}</div>
       </div>
 
       <div className="grid2 report-lower">
-        <div className="panel"><div className="panel-title"><h3>Cashier Performance</h3><span>Owner/Admin</span></div>{cashierRows.length?cashierRows.map(x=><div className="report-row" key={x.name}><span><b>{x.name}</b><small>{x.count} transaction(s) Â· Collected {money(x.collected)} Â· Profit {money(x.profit)}</small><small className="report-meter"><i style={{width:`${Math.max(3,x.sales/maxCashier*100)}%`}}/></small></span><strong>{money(x.sales)}</strong></div>):<div className="empty">No cashier sales in this period.</div>}</div>
+        <div className="panel"><div className="panel-title"><h3>Cashier Performance</h3><span>Owner/Admin</span></div>{cashierRows.length?cashierRows.map(x=><div className="report-row" key={x.name}><span><b>{x.name}</b><small>{x.count} transaction(s) · Collected {money(x.collected)} · Profit {money(x.profit)}</small><small className="report-meter"><i style={{width:`${Math.max(3,x.sales/maxCashier*100)}%`}}/></small></span><strong>{money(x.sales)}</strong></div>):<div className="empty">No cashier sales in this period.</div>}</div>
         <div className="panel"><div className="panel-title"><h3>Inventory Alerts</h3><span>{lowStock.length} low-stock item(s)</span></div>{lowStock.length?lowStock.map(p=><div className="report-row" key={p.id}><span><b>{p.name}</b><small>{p.category||"Product"}</small></span><strong className={Number(p.stock||0)<=0?"profit-negative":""}>{Number(p.stock||0)} left</strong></div>):<div className="empty">No low-stock products.</div>}</div>
       </div>
 
       <div className="panel report-lower"><div className="panel-title"><h3>Financial Reconciliation</h3><span>Selected period</span></div><div className="summary-grid"><div><span>Sales revenue</span><b>{money(salesTotal)}</b></div><div><span>Returns</span><b>âˆ’ {money(returnTotal)}</b></div><div><span>Repair revenue</span><b>+ {money(repairRevenue)}</b></div><div><span>Net business revenue</span><b>{money(businessRevenue)}</b></div><div><span>Sales gross profit</span><b>{money(salesGrossProfit)}</b></div><div><span>Return profit reversal</span><b>âˆ’ {money(returnedGrossProfit)}</b></div><div><span>Gross profit after returns</span><b>{money(grossProfitAfterReturns)}</b></div><div><span>Expenses</span><b>âˆ’ {money(expenseTotal)}</b></div><div><span>Net profit</span><b className={netProfit>=0?"profit-positive":"profit-negative"}>{money(netProfit)}</b></div><div><span>Net collected</span><b>{money(netCollected)}</b></div><div><span>Outstanding credit</span><b>{money(outstanding)}</b></div><div><span>Inventory cost value</span><b>{money(inventoryCost)}</b></div></div></div>
 
-      <div className="panel report-lower"><div className="panel-title"><h3>Detailed Sales Transactions</h3><span>{sales.length} transaction(s) Â· showing up to 50</span></div>{sales.length?<div className="report-table-wrap"><table className="report-table"><thead><tr><th>Receipt</th><th>Date</th><th>Cashier</th><th>Payment</th><th>Items</th><th>Total</th><th>Paid</th><th>Balance</th></tr></thead><tbody>{sales.slice(0,50).map(s=>{const p=profiles.find(x=>x.id===s.cashier_id);const saleItems=items.filter(i=>i.sale_id===s.id);const itemCount=saleItems.reduce((n,i)=>n+Number(i.quantity||0),0);return <tr key={s.id}><td><b>{s.receipt_no||s.id}</b></td><td>{new Date(s.created_at).toLocaleDateString('en-GH')}</td><td>{p?.full_name||'Unknown'}</td><td>{s.payment_method||'â€”'}</td><td>{itemCount}</td><td>{money(s.total)}</td><td>{money(s.amount_paid)}</td><td>{money(s.balance_due)}</td></tr>})}</tbody></table></div>:<div className="empty">No sales transactions in this period.</div>}</div>
+      <div className="panel report-lower"><div className="panel-title"><h3>Detailed Sales Transactions</h3><span>{sales.length} transaction(s) · showing up to 50</span></div>{sales.length?<div className="report-table-wrap"><table className="report-table"><thead><tr><th>Receipt</th><th>Date</th><th>Cashier</th><th>Payment</th><th>Items</th><th>Total</th><th>Paid</th><th>Balance</th></tr></thead><tbody>{sales.slice(0,50).map(s=>{const p=profiles.find(x=>x.id===s.cashier_id);const saleItems=items.filter(i=>i.sale_id===s.id);const itemCount=saleItems.reduce((n,i)=>n+Number(i.quantity||0),0);return <tr key={s.id}><td><b>{s.receipt_no||s.id}</b></td><td>{new Date(s.created_at).toLocaleDateString('en-GH')}</td><td>{p?.full_name||'Unknown'}</td><td>{s.payment_method||'â€”'}</td><td>{itemCount}</td><td>{money(s.total)}</td><td>{money(s.amount_paid)}</td><td>{money(s.balance_due)}</td></tr>})}</tbody></table></div>:<div className="empty">No sales transactions in this period.</div>}</div>
 
       <div className="panel report-lower"><div className="panel-title"><h3>Returns Detail</h3><span>{returns.length} return(s)</span></div>{returns.length?<div className="report-table-wrap"><table className="report-table"><thead><tr><th>Return</th><th>Sale</th><th>Date</th><th>Method</th><th>Reason</th><th>Refund</th></tr></thead><tbody>{returns.map(r=><tr key={r.id}><td><b>RET-{r.id}</b></td><td>{r.sale_id}</td><td>{new Date(r.created_at).toLocaleDateString('en-GH')}</td><td>{r.refund_method||'â€”'}</td><td>{r.reason||'â€”'}</td><td>{money(r.refund_total)}</td></tr>)}</tbody></table></div>:<div className="empty">No returns in this period.</div>}</div>
 
@@ -2534,8 +2534,8 @@ function SettingsPage({settings,reload}){
 
       <div className="panel settings-card">
         <div className="settings-card-head"><div className="settings-icon"><CreditCard size={18}/></div><div><h3>Currency & Payments</h3><p>Ghana shop payment configuration.</p></div></div>
-        <div className="settings-fixed-row"><span>Currency</span><strong>GHS Â· â‚µ</strong></div>
-        <div className="settings-info"><b>Supported payment methods</b><span>Cash Â· MTN MoMo Â· Telecel Cash Â· AirtelTigo Money Â· Bank Transfer Â· Card Â· Credit</span></div>
+        <div className="settings-fixed-row"><span>Currency</span><strong>GHS · ₵</strong></div>
+        <div className="settings-info"><b>Supported payment methods</b><span>Cash · MTN MoMo · Telecel Cash · AirtelTigo Money · Bank Transfer · Card · Credit</span></div>
       </div>
     </div>
 
