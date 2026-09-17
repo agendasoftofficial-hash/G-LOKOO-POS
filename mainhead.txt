@@ -1,0 +1,380 @@
+import React, {useEffect, useMemo, useState} from "react";
+import { createRoot } from "react-dom/client";
+import {
+  LayoutDashboard, ShoppingCart, Package, Smartphone, Users, Wrench,
+  ReceiptText, BarChart3, Settings, Search, Plus, Minus, CreditCard,
+  Banknote, History, Menu, X, Bell, LogOut, LoaderCircle, ScanLine, CheckCircle2,
+  UserCog, ShieldCheck, Undo2
+} from "lucide-react";
+import { supabase } from "./supabase";
+import "./styles.css";
+
+const money = n => `₵${Number(n||0).toLocaleString("en-GH",{minimumFractionDigits:2})}`;
+
+const starterAccessories = [
+  {name:"USB-C Fast Charger 25W", category:"Accessories", price:180, cost:110, stock:18},
+  {name:"Premium Phone Case", category:"Accessories", price:120, cost:65, stock:24},
+  {name:"Wireless Earbuds", category:"Accessories", price:350, cost:210, stock:9},
+  {name:"Tempered Glass", category:"Accessories", price:80, cost:35, stock:31}
+];
+
+function Login({onLogin}){
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const [busy,setBusy]=useState(false);
+  const [error,setError]=useState("");
+
+  async function submit(e){
+    e.preventDefault(); setBusy(true); setError("");
+    const {data,error}=await supabase.auth.signInWithPassword({email,password});
+    if(error) setError(error.message);
+    else onLogin(data.user);
+    setBusy(false);
+  }
+
+  return <div className="login-screen">
+    <div className="login-card">
+      <img src="/g-lokoo-logo.png" className="login-logo" alt="G-LOKOO"/>
+      <h1>G-LOKOO</h1><p>PHONES & ACCESSORIES</p>
+      <div className="login-divider"/>
+      <h2>POS Login</h2>
+      <form onSubmit={submit}>
+        <label>Email<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="admin@example.com"/></label>
+        <label>Password<input type="password" required value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••"/></label>
+        {error&&<div className="error">{error}</div>}
+        <button className="login-btn" disabled={busy}>{busy?<><LoaderCircle className="spin" size={17}/>Signing in...</>:"Sign in"}</button>
+      </form>
+      <small>Secure access · G-LOKOO POS</small>
+    </div>
+  </div>
+}
+
+function App(){
+  const [session,setSession]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const [page,setPage]=useState("Dashboard");
+  const [products,setProducts]=useState([]);
+  const [phones,setPhones]=useState([]);
+  const [cart,setCart]=useState([]);
+  const [query,setQuery]=useState("");
+  const [phoneImei,setPhoneImei]=useState("");
+  const [payment,setPayment]=useState("Cash");
+  const [paymentType,setPaymentType]=useState("Full Payment");
+  const [amountPaid,setAmountPaid]=useState("");
+  const [dueDate,setDueDate]=useState("");
+  const [paymentReference,setPaymentReference]=useState("");
+  const [mobileOpen,setMobileOpen]=useState(false);
+  const [lastSale,setLastSale]=useState(null);
+  const [customers,setCustomers]=useState([]);
+  const [selectedCustomer,setSelectedCustomer]=useState(null);
+  const [profile,setProfile]=useState(null);
+  const [shopSettings,setShopSettings]=useState(null);
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data})=>{setSession(data.session);setLoading(false)});
+    const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,s)=>setSession(s));
+    return ()=>subscription.unsubscribe();
+  },[]);
+
+  useEffect(()=>{
+    if(session){ loadProducts(); loadPhones(); loadCustomers(); loadProfile(); loadShopSettings(); }
+  },[session]);
+
+  async function loadProfile(){
+    const {data,error}=await supabase.from("profiles").select("*").eq("id",session.user.id).maybeSingle();
+    if(!error) setProfile(data);
+  }
+
+  async function loadShopSettings(){
+    const {data,error}=await supabase.from("shop_settings").select("*").eq("id",1).maybeSingle();
+    if(!error && data) setShopSettings(data);
+  }
+
+  async function loadProducts(){
+    const {data,error}=await supabase.from("products").select("*").order("created_at",{ascending:false});
+    if(error){
+      console.error("Could not load products:",error);
+      setProducts([]);
+      return;
+    }
+    if(data?.length){
+      setProducts(data);
+      return;
+    }
+
+    // First-run convenience: create real Supabase products instead of using
+    // fake IDs such as "demo-3". Those fake IDs cannot be stored in the
+    // bigint product_id column during checkout.
+    const {data:seeded,error:seedError}=await supabase
+      .from("products")
+      .insert(starterAccessories)
+      .select("*");
+
+    if(seedError){
+      console.error("Could not create starter products:",seedError);
+      setProducts([]);
+    }else{
+      setProducts(seeded||[]);
+    }
+  }
+
+  async function loadPhones(){
+    const {data,error}=await supabase.from("phone_units").select("*").order("created_at",{ascending:false});
+    if(!error) setPhones(data||[]);
+    else setPhones([]);
+  }
+
+  async function loadCustomers(){
+    const {data,error}=await supabase.from("customers").select("*").order("created_at",{ascending:false});
+    if(!error) setCustomers(data||[]);
+    else setCustomers([]);
+  }
+
+  if(loading) return <div className="loading"><LoaderCircle className="spin" size={30}/>Loading G-LOKOO POS...</div>;
+  if(!session) return <Login onLogin={()=>{}}/>;
+
+  const accessoryProducts=products.filter(p=>p.category!=="Phones");
+  const filteredAccessories=accessoryProducts.filter(p=>
+    `${p.name} ${p.category} ${p.sku||""} ${p.barcode||""}`.toLowerCase().includes(query.toLowerCase())
+  );
+
+  function addAccessory(p){
+    if(Number(p.stock||0)<=0)return;
+    setCart(c=>{
+      const f=c.find(i=>i.kind==="product" && i.id===p.id);
+      return f
+        ? c.map(i=>i.kind==="product" && i.id===p.id
+            ? {...i,qty:Math.min(i.qty+1,Number(p.stock))}
+            : i)
+        : [...c,{kind:"product",id:p.id,name:p.name,price:Number(p.price||0),cost:Number(p.cost||0),qty:1,stock:Number(p.stock)}];
+    });
+  }
+
+  function addPhoneToCart(phone){
+    if(phone.status!=="In Stock")return;
+    setCart(c=>{
+      if(c.some(i=>i.kind==="phone" && i.phoneId===phone.id)) return c;
+      return [...c,{
+        kind:"phone", id:`phone-${phone.id}`, phoneId:phone.id,
+        name:`${phone.brand} ${phone.model}`,
+        price:Number(phone.selling_price||0),
+        cost:Number(phone.cost||0), qty:1, stock:1,
+        imei:phone.imei_1, imei2:phone.imei_2,
+        meta:[phone.storage,phone.ram,phone.color].filter(Boolean).join(" • ")
+      }];
+    });
+    setPhoneImei("");
+  }
+
+  async function lookupImei(e){
+    e?.preventDefault();
+    const value=phoneImei.trim();
+    if(!value)return;
+    const {data,error}=await supabase.rpc("find_phone_by_imei",{p_imei:value});
+    if(error){ alert(error.message); return; }
+    const phone=data?.[0];
+    if(!phone){ alert(`No phone found for IMEI ${value}.`); return; }
+    if(phone.status!=="In Stock"){ alert(`This IMEI is already ${phone.status}. It cannot be added to a new sale.`); return; }
+    addPhoneToCart(phone);
+  }
+
+  function changeQty(itemId,d){
+    setCart(c=>c.map(i=>{
+      if(i.id!==itemId)return i;
+      if(i.kind==="phone")return i;
+      return {...i,qty:Math.max(0,Math.min(i.qty+d,i.stock))};
+    }).filter(i=>i.qty>0));
+  }
+
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+
+  async function checkout(){
+    if(!cart.length)return;
+    const paid = paymentType === "Credit" ? 0 : paymentType === "Part Payment" ? Number(amountPaid||0) : total;
+    const balance = Math.max(0,total-paid);
+    if((paymentType === "Credit" || paymentType === "Part Payment") && !selectedCustomer){
+      alert("Please select a customer for credit or part payment sales.");
+      return;
+    }
+    if(!Number.isFinite(paid) || paid < 0 || paid > total){
+      alert(`Amount paid must be between ₵0.00 and ${money(total)}.`);
+      return;
+    }
+    if(paymentType === "Part Payment" && paid <= 0){
+      alert("Enter an amount greater than ₵0.00 for a part payment.");
+      return;
+    }
+    if(paymentType === "Part Payment" && paid >= total){
+      alert("For a full payment, select Full Payment instead of Part Payment.");
+      return;
+    }
+    if((paymentType === "Credit" || paymentType === "Part Payment") && !dueDate){
+      alert("Please select a payment due date.");
+      return;
+    }
+    if((paymentType === "Part Payment" || paymentType === "Full Payment") &&
+       (payment === "MTN MoMo"||payment === "Telecel Cash"||payment === "AirtelTigo Money"||payment === "Bank Transfer") && !paymentReference.trim()){
+      alert("Please enter the transaction reference.");
+      return;
+    }
+
+    try{
+      const {data:{user}}=await supabase.auth.getUser();
+      const receipt=`GL-${Date.now().toString().slice(-8)}`;
+      // Never send placeholder/demo IDs to Supabase. Accessory products must
+      // have a real numeric products.id; phones are identified by IMEI.
+      const invalidAccessory=cart.find(i=>i.kind==="product" && !/^\d+$/.test(String(i.id)));
+      if(invalidAccessory){
+        throw new Error(`\"${invalidAccessory.name}\" is not linked to cloud inventory yet. Refresh the page and try again.`);
+      }
+
+      const items=cart.map(i=>({
+        product_id:i.kind==="product"?String(i.id):null,
+        quantity:i.qty,
+        imei:i.kind==="phone"?i.imei:null,
+      }));
+
+      const {data:sale,error}=await supabase.rpc("complete_sale",{
+        p_receipt_no:receipt,
+        p_customer_id:selectedCustomer?.id||null,
+        p_cashier_id:user?.id||null,
+        p_subtotal:total,
+        p_discount:0,
+        p_total:total,
+        p_payment_method:paymentType === "Credit" ? "Credit" : payment,
+        p_payment_reference:paymentReference.trim(),
+        p_amount_paid:paid,
+        p_payment_status:balance === 0 ? "Paid" : paid > 0 ? "Partially Paid" : "Unpaid",
+        p_due_date:dueDate || null,
+        p_items:items
+      });
+
+      if(error)throw error;
+
+      setLastSale({
+        receiptNo:sale?.receipt_no||receipt,
+        date:new Date(),
+        items:cart.map(i=>({...i})),
+        total,
+        payment,
+        paymentType,
+        amountPaid:paid,
+        balanceDue:balance,
+        dueDate:dueDate || null,
+        paymentReference:paymentReference.trim(),
+        customer:selectedCustomer||null
+      });
+      setCart([]);
+      setPaymentReference("");
+      setAmountPaid("");
+      setDueDate("");
+      setPaymentType("Full Payment");
+      setSelectedCustomer(null);
+      await Promise.all([loadProducts(),loadPhones(),loadCustomers()]);
+    }catch(e){
+      alert(`Sale could not be completed.
+${e.message||e}`);
+    }
+  }
+
+  const role=profile?.role||"cashier";
+  const canAdmin=["owner","admin"].includes(role);
+  const canInventory=canAdmin||role==="inventory";
+  const canSell=canAdmin||role==="cashier";
+  const nav=[["Dashboard",LayoutDashboard,true],["New Sale",ShoppingCart,canSell],["Sales History",History,canSell||canAdmin],["Returns & Refunds",Undo2,canAdmin],["Products",Package,canInventory||canSell],["Phones & IMEI",Smartphone,canInventory||canSell],["Purchases",ReceiptText,canInventory],["Customers",Users,canSell||canAdmin],["Repairs",Wrench,canAdmin||role==="technician"],["Expenses",Banknote,canAdmin],["Reports",BarChart3,canAdmin],["Staff",UserCog,canAdmin],["Settings",Settings,canAdmin]];
+
+  async function logout(){await supabase.auth.signOut();setCart([])}
+
+  return <div className="app">
+    <aside className={`sidebar ${mobileOpen?"open":""}`}>
+      <div className="brand"><img src="/g-lokoo-logo.png" alt="G-LOKOO"/><div><strong>G-LOKOO</strong><span>PHONES & ACCESSORIES</span></div><button className="close" onClick={()=>setMobileOpen(false)}><X size={20}/></button></div>
+      <div className="nav">{nav.filter(([,Icon,allowed])=>allowed).map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>{setPage(name);setMobileOpen(false)}}><Icon size={19}/><span>{name}</span></button>)}</div>
+      <div className="sidebar-footer"><button className="logout" onClick={logout}><LogOut size={15}/> Sign out</button>© 2026 G-LOKOO POS</div>
+    </aside>
+
+    <main className="main">
+      <header className="topbar">
+        <button className="menu" onClick={()=>setMobileOpen(true)}><Menu/></button>
+        <div><h1>{page}</h1><p>G-LOKOO PHONES AND ACCESSORIES</p></div>
+        <div className="top-actions"><button><Bell size={19}/></button><div className="user"><ShieldCheck size={14}/>{profile?.full_name||session.user.email}<small>{role}</small></div></div>
+      </header>
+
+      {page==="Dashboard"&&<Dashboard products={products} phones={phones} role={role}/>}
+      {page==="New Sale"&&
+        <POS
+          products={filteredAccessories}
+          phones={phones}
+          query={query}
+          setQuery={setQuery}
+          phoneImei={phoneImei}
+          setPhoneImei={setPhoneImei}
+          lookupImei={lookupImei}
+          cart={cart}
+          addAccessory={addAccessory}
+          addPhoneToCart={addPhoneToCart}
+          changeQty={changeQty}
+          total={total}
+          payment={payment}
+          setPayment={setPayment}
+          paymentReference={paymentReference}
+          setPaymentReference={setPaymentReference}
+          paymentType={paymentType}
+          setPaymentType={setPaymentType}
+          amountPaid={amountPaid}
+          setAmountPaid={setAmountPaid}
+          dueDate={dueDate}
+          setDueDate={setDueDate}
+          checkout={checkout}
+          customers={customers}
+          selectedCustomer={selectedCustomer}
+          setSelectedCustomer={setSelectedCustomer}
+        />
+      }
+      {lastSale&&<Receipt sale={lastSale} settings={shopSettings} close={()=>setLastSale(null)}/>}
+      {page==="Sales History"&&<SalesHistory customers={customers} settings={shopSettings}/>}
+      {page==="Returns & Refunds"&&<Returns customers={customers}/>}
+      {page==="Products"&&<Products products={products} reload={loadProducts} canManage={canInventory}/>}
+      {page==="Phones & IMEI"&&<Imei phones={phones} reload={loadPhones} canManage={canInventory}/>}
+      {page==="Purchases"&&<Purchases products={products} reload={()=>{loadProducts();loadPhones();}}/>}
+      {page==="Customers"&&<Customers customers={customers} reload={loadCustomers} role={role}/>}
+      {page==="Repairs"&&<Repairs customers={customers}/>}
+      {page==="Expenses"&&<Expenses/>}
+      {page==="Reports"&&<Reports/>}
+      {page==="Staff"&&<Staff currentProfile={profile} reload={loadProfile}/>}
+      {page==="Settings"&&<SettingsPage settings={shopSettings} reload={loadShopSettings}/>}
+      {!["Dashboard","New Sale","Sales History","Products","Phones & IMEI","Purchases","Customers","Repairs","Returns & Refunds","Reports"].includes(page)&&<EmptyPage title={page}/>}
+    </main>
+  </div>
+}
+
+function Dashboard({products,phones,role}){
+  const today=new Date();
+  const iso=d=>d.toISOString().slice(0,10);
+  const [range,setRange]=useState("today");
+  const [from,setFrom]=useState(iso(new Date(today.getFullYear(),today.getMonth(),today.getDate())));
+  const [to,setTo]=useState(iso(today));
+  const [stats,setStats]=useState({
+    sales:0,profit:0,collected:0,outstanding:0,saleCount:0,activeRepairs:0,
+    returns:0,returnCount:0,repairRevenue:0,repairCollected:0,trend:[],
+    payments:[],bestSellers:[],cashiers:[]
+  });
+  const [busy,setBusy]=useState(true);
+  const [error,setError]=useState("");
+  const isManagement=["owner","admin"].includes(role);
+
+  function setQuickRange(key){
+    const now=new Date();
+    const end=iso(now);
+    let start;
+    if(key==="today") start=iso(new Date(now.getFullYear(),now.getMonth(),now.getDate()));
+    if(key==="yesterday"){
+      const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1);
+      start=iso(d);
+      setTo(start);
+      setRange(key);
+      setFrom(start);
+      return;
+    }
+    if(key==="7d"){
+      start=iso(new Date(now.getFullYear(),now.getMonth(),now.getDate()-6));
+    }

@@ -1,0 +1,57 @@
+{
+  "name": "g-lokoo-pos",
+  "private": true,
+  "version": "2.25.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "desktop": "electron .",
+    "desktop:build": "electron-builder --win nsis",
+    "android:add": "npx cap add android",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:build": "npm run build && npx cap sync android && cd android && gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.10",
+    "typescript": "^5.6.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "lucide-react": "^0.468.0",
+    "@supabase/supabase-js": "^2.49.1",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/android": "^7.4.3",
+    "@capacitor-mlkit/barcode-scanning": "^7.3.0"
+  },
+  "devDependencies": {
+    "electron": "^37.2.6",
+    "electron-builder": "^26.0.12",
+    "@capacitor/cli": "^7.4.3"
+  },
+  "main": "electron/main.cjs",
+  "build": {
+    "appId": "com.agendasoft.glokoo.pos",
+    "productName": "G-LOKOO POS",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "public/g-lokoo-logo.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/g-lokoo-logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
