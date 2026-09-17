@@ -16,7 +16,7 @@ import { LiveUpdate } from "@capawesome/capacitor-live-update";
 const API_BASE_URL = "https://glokoophonesandaccessories.vercel.app";
 
 const LIVE_UPDATE_MANIFEST_URL =
-  `${API_BASE_URL}/live-update.json`;
+  `${API_BASE_URL}/live-updates/latest.json`;
 
 const CURRENT_BUNDLE_ID = "2.25.0";
 
