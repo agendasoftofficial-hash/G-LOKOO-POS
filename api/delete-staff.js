@@ -87,7 +87,7 @@ export default async function handler(req, res) {
     // Find the staff member.
     const { data: member, error: memberError } = await admin
       .from("profiles")
-      .select("id, full_name, email, role, active")
+      .select("id, full_name, role, active")
       .eq("id", id)
       .maybeSingle();
 
