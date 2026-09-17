@@ -13,13 +13,6 @@ import "./styles.css";
 
 const money = n => `₵${Number(n||0).toLocaleString("en-GH",{minimumFractionDigits:2})}`;
 
-const starterAccessories = [
-  {name:"USB-C Fast Charger 25W", category:"Accessories", price:180, cost:110, stock:18},
-  {name:"Premium Phone Case", category:"Accessories", price:120, cost:65, stock:24},
-  {name:"Wireless Earbuds", category:"Accessories", price:350, cost:210, stock:9},
-  {name:"Tempered Glass", category:"Accessories", price:80, cost:35, stock:31}
-];
-
 function BarcodeScanner({onDetected,onClose,title="Scan Barcode"}){
   const videoRef=useRef(null);
   const streamRef=useRef(null);
@@ -277,7 +270,6 @@ function App(){
     // bigint product_id column during checkout.
     const {data:seeded,error:seedError}=await supabase
       .from("products")
-      .insert(starterAccessories)
       .select("*");
 
     if(seedError){
