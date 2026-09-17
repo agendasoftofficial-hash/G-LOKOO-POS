@@ -1954,6 +1954,51 @@ function Staff({currentProfile,reload}){
     if(error) alert(error.message); else alert(`Password reset email sent to ${member.email}.`);
   }
 
+async function deleteStaff(member){
+  if(!member?.id) return;
+
+  const confirmed=window.confirm(
+    `Delete staff account "${member.full_name || member.email}"?\n\nThis will permanently remove the staff profile and login account.`
+  );
+
+  if(!confirmed) return;
+
+  try{
+    setSaving(member.id);
+
+    const {data:{session}}=await supabase.auth.getSession();
+
+    if(!session?.access_token){
+      throw new Error("Your session has expired. Please sign in again.");
+    }
+
+    const response=await fetch("/api/delete-staff",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${session.access_token}`
+      },
+      body:JSON.stringify({id:member.id})
+    });
+
+    const result=await response.json();
+
+    if(!response.ok){
+      throw new Error(result.error || "Could not delete staff account.");
+    }
+
+    alert(result.message || "Staff account deleted successfully.");
+
+    await load();
+  }catch(error){
+    console.error("Delete staff error:",error);
+    alert(error?.message || "Could not delete staff account.");
+  }finally{
+    setSaving(null);
+  }
+}
+
+
   function resetForm(){setForm({full_name:"",email:"",phone:"",role:"cashier",password:""});setOpen(false)}
 
   async function createStaff(e){
@@ -1993,7 +2038,7 @@ function Staff({currentProfile,reload}){
       <td><button className={`status-pill ${m.active?"active":"inactive"}`} disabled={saving===m.id} onClick={()=>toggleActive(m)}>{m.active?"Active":"Inactive"}</button></td>
       <td>{dateTime(m.last_sign_in_at)}</td>
       <td>{m.created_at?new Date(m.created_at).toLocaleDateString("en-GH"):"—"}</td>
-      <td><div className="staff-actions"><button className="table-action" disabled={saving===m.id} onClick={()=>resetPassword(m)}><KeyRound size={14}/> Reset</button></div></td>
+<td><div className="staff-actions"><button className="table-action" disabled={saving===m.id} onClick={()=>resetPassword(m)}><KeyRound size={14}/> Reset</button><button className="table-action" disabled={saving===m.id || m.role==="owner"} onClick={()=>deleteStaff(m)} title={m.role==="owner" ? "Owner accounts cannot be deleted" : "Delete staff account"}>Delete</button></div></td>
     </tr>)}</tbody></table></div>
     <div className="staff-note"><ShieldCheck size={18}/><div><b>Security protections</b><span>At least one active Owner must remain. Owners cannot deactivate their own account. Inactive accounts are blocked from entering the POS, and role/status changes are written to Audit Log.</span></div></div>
     {open&&<Modal title="Create New Staff Account" close={()=>!busy&&resetForm()}>
