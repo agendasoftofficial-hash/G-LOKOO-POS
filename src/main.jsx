@@ -11,6 +11,78 @@ import { supabase } from "./supabase";
 import { getCache, putCache, queueOperation, getQueue, removeQueued, registerOfflineServiceWorker } from "./offline";
 import "./styles.css";
 
+import { LiveUpdate } from "@capawesome/capacitor-live-update";
+
+const API_BASE_URL = "https://glokoophonesandaccessories.vercel.app";
+
+const LIVE_UPDATE_MANIFEST_URL =
+  `${API_BASE_URL}/live-update.json`;
+
+const CURRENT_BUNDLE_ID = "2.25.0";
+
+async function checkForLiveUpdate() {
+  if (!window.Capacitor?.isNativePlatform?.()) return;
+
+  try {
+    // Tell Live Update the current app bundle is healthy.
+    await LiveUpdate.ready();
+
+    const response = await fetch(
+      `${LIVE_UPDATE_MANIFEST_URL}?t=${Date.now()}`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      console.log("Live Update: manifest unavailable.");
+      return;
+    }
+
+    const update = await response.json();
+
+    if (!update?.bundleId || !update?.url) {
+      console.log("Live Update: invalid manifest.");
+      return;
+    }
+
+    const current = await LiveUpdate.getCurrentBundle();
+    const currentId = current?.bundleId || CURRENT_BUNDLE_ID;
+
+    if (String(update.bundleId) === String(currentId)) {
+      console.log("Live Update: app is already up to date.");
+      return;
+    }
+
+    console.log(
+      `Live Update: downloading bundle ${update.bundleId}...`
+    );
+
+    await LiveUpdate.downloadBundle({
+      url: update.url,
+      bundleId: String(update.bundleId),
+      ...(update.checksum
+        ? { checksum: update.checksum }
+        : {}),
+      ...(update.signature
+        ? { signature: update.signature }
+        : {}),
+    });
+
+    await LiveUpdate.setNextBundle({
+      bundleId: String(update.bundleId),
+    });
+
+    console.log(
+      `Live Update: bundle ${update.bundleId} ready for next launch.`
+    );
+  } catch (error) {
+    console.error("Live Update error:", error);
+  }
+}
+
+checkForLiveUpdate();
+
 const money = n => `₵${Number(n||0).toLocaleString("en-GH",{minimumFractionDigits:2})}`;
 
 function BarcodeScanner({onDetected,onClose,title="Scan Barcode"}){
@@ -1972,7 +2044,7 @@ async function deleteStaff(member){
       throw new Error("Your session has expired. Please sign in again.");
     }
 
-    const response=await fetch("/api/delete-staff",{
+    const response=await fetch(`${API_BASE_URL}/api/delete-staff`,{
       method:"POST",
       headers:{
         "Content-Type":"application/json",
@@ -2008,7 +2080,7 @@ async function deleteStaff(member){
     setBusy(true);
     try{
       const {data:{session}}=await supabase.auth.getSession();
-      const response=await fetch("/api/create-staff",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${session?.access_token||""}`},body:JSON.stringify(form)});
+      const response=await fetch(`${API_BASE_URL}/api/create-staff`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${session?.access_token||""}`},body:JSON.stringify(form)});
       const result=await response.json().catch(()=>({}));
       if(!response.ok) throw new Error(result.error||"Could not create staff account.");
       alert(`Staff account created for ${form.full_name}.`);
