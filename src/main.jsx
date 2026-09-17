@@ -259,28 +259,18 @@ function App(){
   }
 
   async function loadProducts(){
-    const {data,error}=await supabase.from("products").select("*").order("created_at",{ascending:false});
-    if(error){
-      const cached=await getCache("products",[]); setProducts(cached); return;
-    }
-    if(data?.length){ await putCache("products",data); setProducts(data); return; }
-
-    // First-run convenience: create real Supabase products instead of using
-    // fake IDs such as "demo-3". Those fake IDs cannot be stored in the
-    // bigint product_id column during checkout.
-    const {data:seeded,error:seedError}=await supabase
-      .from("products")
-      .select("*");
-
-    if(seedError){
-      console.error("Could not create starter products:",seedError);
-      setProducts([]);
-    }else{
-      await putCache("products",seeded||[]); setProducts(seeded||[]);
-    }
+  const {data,error}=await supabase.from('products').select('*').order('created_at',{ascending:false});
+  if(error){
+    console.error('Could not load products:',error);
+    const cached=await getCache('products',[]);
+    setProducts(cached);
+    return;
   }
+  await putCache('products',data||[]);
+  setProducts(data||[]);
+}
 
-  async function loadPhones(){
+async function loadPhones(){
     const {data,error}=await supabase.from("phone_units").select("*").order("created_at",{ascending:false});
     if(!error){await putCache("phones",data||[]);setPhones(data||[]);} else setPhones(await getCache("phones",[]));
   }
