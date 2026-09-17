@@ -562,7 +562,7 @@ ${e.message||e}`);
     <aside className={`sidebar ${mobileOpen?"open":""}`}>
       <div className="brand"><img src="/g-lokoo-logo.png" alt="G-LOKOO"/><div><strong>G-LOKOO</strong><span>PHONES & ACCESSORIES</span></div><button className="close" onClick={()=>setMobileOpen(false)}><X size={20}/></button></div>
       <div className="nav">{nav.filter(([,Icon,allowed])=>allowed).map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>navigate(name)}><Icon size={19}/><span>{name}</span></button>)}</div>
-      <div className="sidebar-footer"><button className="logout" onClick={logout}><LogOut size={15}/> Sign out</button>Ã‚Â© AgendaSoft 2026 Â· G-LOKOO POS</div>
+      <div className="sidebar-footer">{"\u00A9"} AgendaSoft 2026 {"\u00B7"} G-LOKOO POS</div>
     </aside>
 
     <main className="main">
@@ -619,7 +619,7 @@ ${e.message||e}`);
       {page==="Staff"&&<Staff currentProfile={profile} reload={loadProfile}/>}
       {page==="Settings"&&<SettingsPage settings={shopSettings} reload={loadShopSettings}/>}
       {!["Dashboard","New Sale","Sales History","Products & Inventory","Phones & IMEI","Purchases","Suppliers","Customers","Repairs","Returns & Refunds","Inventory Control","Reports"].includes(page)&&<EmptyPage title={page}/>}
-    <footer className="app-footer">Ã‚Â© AgendaSoft 2026 Â· G-LOKOO POS</footer>
+    <footer className="app-footer">{"\u00A9"} AgendaSoft 2026 {"\u00B7"} G-LOKOO POS</footer>
     </main>
   </div>
 }
