@@ -561,7 +561,7 @@ ${e.message||e}`);
   return <div className="app">
     <aside className={`sidebar ${mobileOpen?"open":""}`}>
       <div className="brand"><img src="/g-lokoo-logo.png" alt="G-LOKOO"/><div><strong>G-LOKOO</strong><span>PHONES & ACCESSORIES</span></div><button className="close" onClick={()=>setMobileOpen(false)}><X size={20}/></button></div>
-      <div className="nav">{nav.filter(([,Icon,allowed])=>allowed).map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>navigate(name)}><Icon size={19}/><span>{name}</span></button>)}</div>
+      <div className="nav">{nav.filter(([,Icon,allowed])=>allowed).map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>navigate(name)}><Icon size={19}/><span>{name}</span></button>)}</div><div className="sidebar-logout"><button onClick={logout}><LogOut size={19}/><span>Logout</span></button></div>
       <div className="sidebar-footer">{"\u00A9"} AgendaSoft 2026 {"\u00B7"} G-LOKOO POS</div>
     </aside>
 
